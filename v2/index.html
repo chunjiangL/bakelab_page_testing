@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BakeLab</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <script defer src="https://cloud.umami.is/script.js"
+        data-website-id="82364d02-ef99-45f6-b1f2-37c338543b86"></script>
+    <style>
+        :root {
+            --bg-color: #faf8f3;
+            /* Cream */
+            --text-color: #1a1a1a;
+            --brand-color: #593513;
+            /* rgb(89, 53, 19) */
+            --accent-color: #D4AF37;
+            /* Gold */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            font-family: 'Inter', sans-serif;
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        /* --- Hero Section (Fluid Animation) --- */
+
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: 0;
+        }
+
+        /* --- Hero Section --- */
+
+        .hero-section {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--bg-color);
+            padding: 2rem;
+        }
+
+        .hero-title {
+            /* Using Baloo 2 (Bold 600) as requested */
+            font-family: 'Baloo 2', cursive;
+            font-size: 6vw;
+            /* Reduced size */
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            line-height: 0.9;
+            text-align: center;
+
+            /* Gradient Text - Darker */
+            background: linear-gradient(135deg, #3E250D, #8B5A2B);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+
+            margin: 0 0 3rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 3.5rem;
+                /* Adjusted for mobile */
+            }
+        }
+
+        .hero-logo {
+            width: 150px;
+            height: auto;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        /* --- Dynamic Logo Section --- */
+        .dynamic-logo-container {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        .dynamic-logo-img {
+            height: 320px;
+            /* Enlarged as requested */
+            width: auto;
+            object-fit: contain;
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dynamic-logo-img {
+                height: 320px;
+            }
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 3rem;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.2rem;
+            font-style: italic;
+            color: #000;
+            opacity: 0.6;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-10px);
+            }
+
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        /* --- Content Section --- */
+
+        .content-section {
+            position: relative;
+            z-index: 2;
+            background-color: var(--bg-color);
+            width: 100%;
+            min-height: 100vh;
+            padding: 120px 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* Typography & Layout */
+
+        .intro-text {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.5rem;
+            font-weight: 400;
+            line-height: 1.2;
+            color: #4a4a4a;
+            margin-bottom: 1rem;
+            max-width: 90%;
+        }
+
+        .section-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1rem;
+            font-weight: 400;
+            color: var(--brand-color);
+            margin-top: 1rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(89, 53, 19, 0.2);
+            padding-bottom: 0.5rem;
+            display: inline-block;
+        }
+
+        .content-block p {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 300;
+            color: #333;
+            margin-bottom: 1.5rem;
+            max-width: 800px;
+        }
+
+        .content-block strong {
+            font-weight: 600;
+            color: var(--brand-color);
+        }
+
+        .contact-container {
+            display: flex;
+            gap: 4rem;
+            flex-wrap: wrap;
+        }
+
+        .contact-item {
+            flex: 0 1 auto;
+        }
+
+        .contact-link {
+            display: block;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.2rem;
+            color: var(--brand-color);
+            text-decoration: none;
+            margin-bottom: 0.25rem;
+            transition: opacity 0.2s;
+        }
+
+        .contact-link:hover {
+            opacity: 0.7;
+        }
+
+        .contact-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #888;
+            margin-bottom: 1.5rem;
+        }
+
+        footer {
+            margin-top: 100px;
+            padding-top: 40px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            color: #999;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        footer a {
+            color: #666;
+            text-decoration: none;
+            margin-right: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 22vw;
+            }
+
+            .intro-text {
+                font-size: 1.8rem;
+            }
+
+            .content-section {
+                padding: 80px 20px;
+            }
+
+            /* Mobile Responsiveness Update */
+            .dynamic-logo-img {
+                height: 20vh;
+                /* Increased from 80px */
+                max-height: 200px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Hero Section -->
+    <div class="hero-section">
+
+        <!-- Dynamic Logo Container -->
+        <div class="dynamic-logo-container">
+            <img id="dynamic-logo" src="BakeLab-01.png" alt="BakeLab Logo" class="dynamic-logo-img">
+        </div>
+
+    </div>
+
+    <!-- Main Content -->
+    <div class="content-section" id="content-section">
+        <div class="container">
+
+            <!-- Intro / Mission -->
+            <div class="intro-text">
+                BakeLab is an industry research lab advancing the science and art of frontier data. We bake data with
+                quality, precision, and creativity.
+            </div>
+
+            <div class="content-block">
+                <!-- <p>
+                    Our members come from leading universities and frontier AI labs, united by a shared belief that
+                    intelligence, like bread, rises from the quality of its ingredients.
+                </p>
+                
+                <h2 class="section-title">Our Work</h2>
+                <p>
+                    We create high-quality datasets across <strong>Agentic</strong>, <strong>STEM</strong>, and
+                    <strong>Humanities</strong> domains, serving as the essential ingredients for post-training,
+                    fine-tuning, and reinforcement learning of foundation models.
+                </p>
+                <p>
+                    Through BakeLab, we offer 📦 <strong>off-the-shelf datasets</strong> that are rigorously curated,
+                    and 🛠️ <strong>customized datasets</strong> carefully designed across disciplines, helping models
+                    learn with precision and depth.
+                </p> -->
+
+                <h2 class="section-title">Get in Touch</h2>
+
+                <div class="contact-container">
+                    <div class="contact-item">
+                        <a href="mailto:sales@bakelab.ai" class="contact-link">sales@bakelab.ai</a>
+                        <div class="contact-label">For Data Inquiries</div>
+                    </div>
+
+                    <div class="contact-item">
+                        <a href="mailto:careers@bakelab.ai" class="contact-link">careers@bakelab.ai</a>
+                        <div class="contact-label">For Careers</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- <footer>
+                <div>Bake AI Inc © 2025</div>
+                <div>
+                    <a href="https://bakelab.ai">Home</a>
+                    <a href="mailto:sales@bakelab.ai">Contact</a>
+                </div>
+            </footer> -->
+        </div>
+    </div>
+
+    <script>
+        // --- Probabilistic Logo Selection ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const logoImg = document.getElementById('dynamic-logo');
+            const r = Math.random();
+            let selectedLogo = 'BakeLab-01.png';
+
+            // Probabilities:
+            // BakeLab-01: 90% (0.0 - 0.9)
+            // BakeLab-02: 3%  (0.9 - 0.93)
+            // BakeLab-03: 5%  (0.93 - 0.98)
+            // BakeLab-04: 1.9% (0.98 - 0.999)
+            // BakeLab-05: 0.1% (0.999 - 1.0)
+
+            if (r < 0.90) {
+                selectedLogo = 'BakeLab-01.png';
+            } else if (r < 0.93) {
+                selectedLogo = 'BakeLab-02.png';
+            } else if (r < 0.98) {
+                selectedLogo = 'BakeLab-03.png';
+            } else if (r < 0.999) {
+                selectedLogo = 'BakeLab-04.png';
+            } else {
+                selectedLogo = 'BakeLab-05.png';
+            }
+
+            logoImg.src = selectedLogo;
+            console.log(`Random Value: ${r.toFixed(4)}, Selected Logo: ${selectedLogo}`);
+        });
+
+        // --- Auto Scroll ---
+        setTimeout(() => {
+            const contentSection = document.querySelector('.content-section');
+            if (contentSection) {
+                contentSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        }, 3000);
+
+        // --- Visibility Logic & Interactive Speed ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const factoryContainer = document.querySelector('.bake-factory-container');
+            // Visibility Logic - Hide on Hero, Show on Second Page
+            const heroSection = document.querySelector('.hero-section');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        // Hero is visible -> Hide Factory
+                        factoryContainer.classList.remove('visible');
+                    } else {
+                        // Hero is NOT visible -> Show Factory
+                        factoryContainer.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 }); // Trigger when 10% of hero is visible/hidden
+
+            if (heroSection) {
+                observer.observe(heroSection);
+            }
+            // factoryContainer.classList.add('visible'); // Removed default visibility
+
+            // Audio Context for Machine Sound
+            let audioCtx;
+            let oscillator;
+            let gainNode;
+            let isAudioInitialized = false;
+
+            function initAudio() {
+                if (isAudioInitialized) return;
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                audioCtx = new AudioContext();
+
+                // Create Oscillator
+                oscillator = audioCtx.createOscillator();
+                oscillator.type = 'sawtooth'; // Buzzy machine sound
+                oscillator.frequency.value = 100; // Base frequency
+
+                // Create Gain Node (Volume)
+                gainNode = audioCtx.createGain();
+                gainNode.gain.value = 0; // Start silent
+
+                // Connect
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+
+                oscillator.start();
+                isAudioInitialized = true;
+            }
+
+            // Initialize audio on first interaction
+            const initAudioEvents = ['click', 'touchstart', 'keydown'];
+            const initAudioHandler = () => {
+                initAudio();
+                initAudioEvents.forEach(e => window.removeEventListener(e, initAudioHandler));
+            };
+            initAudioEvents.forEach(e => window.addEventListener(e, initAudioHandler));
+
+            // Click / Key Interaction Logic
+            let currentSpeed = 1;
+            const minSpeed = 1;
+            const decayRate = 0.98; // Speed decays by 2% per frame
+
+            function accelerate() {
+                // Increase speed
+                currentSpeed += 1;
+
+                // Visual Popup
+                showSpeedUpPopup();
+
+                // Audio Feedback
+                if (isAudioInitialized && audioCtx && audioCtx.state === 'running') {
+                    // Instant pitch jump
+                    const targetFreq = 100 + (currentSpeed * 30);
+                    oscillator.frequency.setValueAtTime(targetFreq, audioCtx.currentTime);
+
+                    // Instant volume bump (Reduced peak volume)
+                    gainNode.gain.cancelScheduledValues(audioCtx.currentTime);
+                    gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime); // Was 0.2, now 0.05 (much quieter)
+
+                    // Slow fade out to silence
+                    // Ramps to near-zero over 2 seconds
+                    gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 2.0);
+                }
+
+                // Trigger Game Prompt
+                if (currentSpeed > 5) {
+                    if (window.triggerGamePrompt) {
+                        window.triggerGamePrompt();
+                    }
+                }
+            }
+
+            // Click Listener
+            factoryContainer.style.pointerEvents = 'auto'; // Enable clicks
+            factoryContainer.style.cursor = 'pointer';
+            factoryContainer.addEventListener('click', accelerate);
+
+            // Spacebar Listener
+            window.addEventListener('keydown', (e) => {
+                if (e.code === 'Space') {
+                    e.preventDefault(); // Prevent scrolling
+                    accelerate();
+                }
+            });
+
+            // Visual Popup Logic
+            function showSpeedUpPopup() {
+                const popup = document.createElement('div');
+                popup.className = 'speed-popup';
+                popup.innerHTML = 'Speed Up! <span style="color: #D4AF37;">↑</span>';
+
+                // Position near the factory
+                // Since factory is fixed bottom center, we can position relative to viewport
+                const rect = factoryContainer.getBoundingClientRect();
+                const randomX = (Math.random() - 0.5) * 100; // Random horizontal offset
+
+                popup.style.left = (rect.left + rect.width / 2 + randomX) + 'px';
+                popup.style.top = (rect.top) + 'px';
+
+                document.body.appendChild(popup);
+
+                // Remove after animation
+                setTimeout(() => {
+                    popup.remove();
+                }, 800);
+            }
+
+            // Game Loop for Decay and Updates
+            function updateLoop() {
+                // Decay Speed
+                if (currentSpeed > minSpeed) {
+                    currentSpeed *= decayRate;
+                    if (currentSpeed < minSpeed + 0.01) currentSpeed = minSpeed;
+                }
+
+                // Update CSS
+                factoryContainer.style.setProperty('--speed-factor', currentSpeed);
+
+                // Update Audio Pitch (Continuous)
+                if (isAudioInitialized && audioCtx && audioCtx.state === 'running') {
+                    const targetFreq = 100 + (currentSpeed * 50);
+                    oscillator.frequency.setTargetAtTime(targetFreq, audioCtx.currentTime, 0.1);
+                }
+
+                requestAnimationFrame(updateLoop);
+            }
+
+            // Start Loop
+            updateLoop();
+        });
+    </script>
+    <!-- Bake Factory Animation -->
+    <div class="bake-factory-container">
+        <svg class="bake-factory" viewBox="0 0 150 120" xmlns="http://www.w3.org/2000/svg">
+            <!-- Styles -->
+            <style>
+                .bake-factory-container {
+                    --speed-factor: 1;
+                    /* Default speed multiplier */
+                }
+
+                .factory-stroke {
+                    fill: none;
+                    stroke: #593513;
+                    stroke-width: 2;
+                    stroke-linecap: round;
+                    stroke-linejoin: round;
+                }
+
+                .factory-fill {
+                    fill: #fff;
+                    stroke: #593513;
+                    stroke-width: 2;
+                }
+
+                .factory-detail {
+                    fill: #D4AF37;
+                    /* Gold accent */
+                    stroke: none;
+                }
+
+                /* Animations */
+                @keyframes belt-move {
+                    to {
+                        stroke-dashoffset: -20;
+                    }
+                }
+
+                @keyframes dough-drop {
+                    0% {
+                        transform: translate(20px, -20px);
+                        opacity: 0;
+                    }
+
+                    10% {
+                        transform: translate(20px, 40px);
+                        opacity: 1;
+                    }
+
+                    35% {
+                        transform: translate(50px, 40px);
+                        opacity: 1;
+                    }
+
+                    40% {
+                        transform: translate(50px, 40px);
+                        opacity: 0;
+                    }
+
+                    /* Enters oven */
+                    100% {
+                        transform: translate(50px, 40px);
+                        opacity: 0;
+                    }
+                }
+
+                @keyframes bread-exit {
+                    0% {
+                        transform: translate(90px, 40px);
+                        opacity: 0;
+                    }
+
+                    40% {
+                        transform: translate(90px, 40px);
+                        opacity: 0;
+                    }
+
+                    /* Inside oven */
+                    45% {
+                        transform: translate(90px, 40px);
+                        opacity: 1;
+                    }
+
+                    /* Exits oven to the right */
+                    70% {
+                        transform: translate(160px, 40px);
+                        opacity: 1;
+                    }
+
+                    90% {
+                        transform: translate(220px, 40px);
+                        opacity: 1;
+                    }
+
+                    100% {
+                        transform: translate(240px, 40px);
+                        opacity: 0;
+                    }
+                }
+
+                @keyframes oven-shake {
+
+                    0%,
+                    100% {
+                        transform: rotate(0deg);
+                    }
+
+                    35% {
+                        transform: rotate(0deg);
+                    }
+
+                    36% {
+                        transform: rotate(3deg);
+                    }
+
+                    37% {
+                        transform: rotate(-3deg);
+                    }
+
+                    38% {
+                        transform: rotate(3deg);
+                    }
+
+                    39% {
+                        transform: rotate(-3deg);
+                    }
+
+                    40% {
+                        transform: rotate(0deg);
+                    }
+                }
+
+                .conveyor-belt {
+                    stroke-dasharray: 5 5;
+                    animation: belt-move calc(1s / var(--speed-factor)) linear infinite;
+                }
+
+                .dough {
+                    animation: dough-drop calc(4s / var(--speed-factor)) linear infinite;
+                }
+
+                .bread {
+                    animation: bread-exit calc(4s / var(--speed-factor)) linear infinite;
+                }
+
+                .oven-group {
+                    transform-origin: 70px 60px;
+                    animation: oven-shake calc(4s / var(--speed-factor)) linear infinite;
+                }
+            </style>
+
+            <!-- Machine Parts -->
+            <!-- Chute -->
+            <path class="factory-stroke" d="M20 10 L20 30" />
+            <path class="factory-stroke" d="M30 10 L30 30" />
+            <rect x="15" y="5" width="20" height="5" rx="1" class="factory-fill" />
+
+            <!-- Conveyor Belt -->
+            <line x1="10" y1="50" x2="150" y2="50" class="factory-stroke conveyor-belt" />
+
+            <!-- Wheels -->
+            <!-- <circle cx="20" cy="56" r="4" class="factory-stroke" />
+            <circle cx="130" cy="56" r="4" class="factory-stroke" /> -->
+
+            <!-- Moving Items (Now BEFORE Oven for correct z-index) -->
+            <!-- Dough Ball -->
+            <circle cx="5" cy="1" r="5" class="factory-fill dough" />
+
+            <!-- Finished Bread -->
+            <g class="bread">
+                <!-- Bread Body -->
+                <path class="factory-fill" d="M-8 -6 Q0 -12 8 -6 L8 6 Q0 8 -8 6 Z" />
+                <circle cx="-3" cy="0" r="1" fill="#593513" /> <!-- Eye -->
+                <circle cx="3" cy="0" r="1" fill="#593513" /> <!-- Eye -->
+                <path d="M-2 3 Q0 5 2 3" stroke="#593513" stroke-width="1" fill="none" /> <!-- Smile -->
+            </g>
+
+            <!-- Oven (Now AFTER moving items) -->
+            <g class="oven-group">
+                <rect x="50" y="20" width="50" height="35" rx="3" class="factory-fill" fill="#fdfbf7" />
+                <rect x="58" y="30" width="24" height="16" rx="2" class="factory-stroke" fill="#fff" /> <!-- Window -->
+                <path class="factory-stroke" d="M75 20 L75 15" /> <!-- Chimney -->
+                <path class="factory-stroke" d="M70 10 Q75 5 80 10" opacity="0.5" /> <!-- Smoke -->
+
+                <!-- Details -->
+                <circle cx="90" cy="28" r="3" class="factory-detail" />
+                <circle cx="90" cy="38" r="3" class="factory-detail" />
+                <rect x="50" y="52" width="50" height="3" class="factory-stroke" fill="#593513" />
+            </g>
+
+        </svg>
+    </div>
+
+    <style>
+        .bake-factory-container {
+            position: fixed;
+            bottom: 0;
+            /* Fixed to bottom edge */
+            left: 50%;
+            transform: translateX(-50%);
+            /* Center horizontally only */
+            width: 200px;
+            /* Increased size (approx 50% larger visual impact) */
+            height: 150px;
+            z-index: 1000;
+            pointer-events: auto;
+            /* Initially none, JS enables it */
+            opacity: 0;
+            /* Hidden by default (on Hero) */
+            transition: opacity 0.5s ease-in-out;
+            cursor: pointer;
+        }
+
+        .bake-factory-container.visible {
+            opacity: 1;
+        }
+
+        /* .bake-factory-container:hover {
+            opacity: 1;
+        } */
+
+        /* Speed Popup Styles */
+        .speed-popup {
+            position: fixed;
+            font-family: 'Baloo 2', cursive;
+            font-size: 1rem;
+            /* Reduced from 1.5rem */
+            color: #593513;
+            font-weight: 700;
+            pointer-events: none;
+            z-index: 2000;
+            transform: translate(-50%, -100%);
+            animation: popup-float 0.8s ease-out forwards;
+            text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);
+        }
+
+        @keyframes popup-float {
+            0% {
+                opacity: 0;
+                transform: translate(-50%, 0) scale(0.5);
+            }
+
+            20% {
+                opacity: 1;
+                transform: translate(-50%, -20px) scale(1.2);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -60px) scale(1);
+            }
+        }
+
+        /* --- Game Overlay Styles (Seamless) --- */
+        #game-overlay {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 0;
+            /* Start hidden */
+            background: linear-gradient(to top, #faf8f3 0%, rgba(250, 248, 243, 0.95) 80%, rgba(250, 248, 243, 0) 100%);
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            /* Align to bottom */
+            align-items: center;
+            overflow: hidden;
+            transition: height 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            /* Bouncy open */
+            border-top: 1px solid rgba(89, 53, 19, 0.1);
+            backdrop-filter: blur(5px);
+        }
+
+        #game-overlay.active {
+            height: 400px;
+            /* Expanded height */
+        }
+
+        #game-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .game-ui {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-family: 'Baloo 2', cursive;
+            font-size: 2rem;
+            color: var(--brand-color);
+            text-shadow: 2px 2px 0px rgba(255, 255, 255, 0.5);
+            pointer-events: none;
+        }
+
+        @media (max-width: 768px) {
+            .game-ui {
+                font-size: 1.2rem;
+                top: 10px;
+                right: 10px;
+            }
+        }
+
+        .game-message {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            font-family: 'Baloo 2', cursive;
+            color: var(--brand-color);
+            display: none;
+            z-index: 3001;
+        }
+
+        .game-message h2 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            text-shadow: 3px 3px 0px #fff;
+        }
+
+        @media (max-width: 768px) {
+            .game-message h2 {
+                font-size: 2rem;
+            }
+
+            .game-message p {
+                font-size: 1rem !important;
+                /* Override inline style */
+            }
+        }
+
+        .game-btn {
+            padding: 12px 30px;
+            font-family: 'Inter', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+            background-color: var(--brand-color);
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(89, 53, 19, 0.3);
+        }
+
+        .game-btn:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 6px 20px rgba(89, 53, 19, 0.4);
+        }
+
+        /* Prompt Modal */
+        #game-prompt {
+            position: fixed;
+            bottom: 180px;
+            /* Position above the factory */
+            left: 50%;
+            transform: translateX(-50%) scale(0.9);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1.5rem 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            z-index: 2500;
+            text-align: center;
+            display: none;
+            font-family: 'Baloo 2', cursive;
+            border: 2px solid var(--brand-color);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        #game-prompt.visible {
+            opacity: 1;
+            transform: translateX(-50%) scale(1);
+        }
+
+        #game-prompt h3 {
+            font-size: 1.8rem;
+            color: var(--brand-color);
+            margin-bottom: 1rem;
+        }
+
+        .prompt-btn-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+    </style>
+
+    <!-- Game Prompt -->
+    <div id="game-prompt">
+        <h3>Ready to Run? 🍞</h3>
+        <div class="prompt-btn-group">
+            <button class="game-btn" id="play-yes">Let's Go!</button>
+            <button class="game-btn" id="play-no" style="background-color: #e0e0e0; color: #666;">Nah</button>
+        </div>
+    </div>
+
+    <!-- Game Overlay -->
+    <div id="game-overlay">
+        <div class="game-ui">Score: <span id="score-display">0</span></div>
+        <canvas id="game-canvas"></canvas>
+        <div class="game-message" id="game-over-msg">
+            <h2>Ouch!</h2>
+            <p style="font-size: 1.5rem; margin-bottom: 20px;">You got toasted!</p>
+            <button class="game-btn" id="restart-btn">Run Again</button>
+            <button class="game-btn" id="exit-btn"
+                style="background-color: #e0e0e0; color: #666; margin-left: 10px;">Exit</button>
+        </div>
+    </div>
+
+    <script>
+        // --- Game Logic ---
+        (function () {
+            const prompt = document.getElementById('game-prompt');
+            const overlay = document.getElementById('game-overlay');
+            const canvas = document.getElementById('game-canvas');
+            const ctx = canvas.getContext('2d');
+            const scoreDisplay = document.getElementById('score-display');
+            const gameOverMsg = document.getElementById('game-over-msg');
+            const restartBtn = document.getElementById('restart-btn');
+            const exitBtn = document.getElementById('exit-btn');
+            const playYes = document.getElementById('play-yes');
+            const playNo = document.getElementById('play-no');
+
+            let gameActive = false;
+            let animationId;
+            let score = 0;
+            let gameSpeed = 6;
+            let frame = 0;
+            let scaleRatio = 1; // For responsive scaling
+
+            // Assets
+            const playerImg = new Image();
+            playerImg.src = 'bake192.png';
+
+            // Audio System
+            const GameAudio = {
+                ctx: null,
+                init: function () {
+                    if (!this.ctx) {
+                        this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                    }
+                },
+                playJump: function () {
+                    if (!this.ctx) return;
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(300, this.ctx.currentTime);
+                    osc.frequency.linearRampToValueAtTime(600, this.ctx.currentTime + 0.1);
+
+                    gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.1);
+
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 0.1);
+                },
+                playScore: function () {
+                    if (!this.ctx) return;
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(800, this.ctx.currentTime);
+                    osc.frequency.setValueAtTime(1200, this.ctx.currentTime + 0.1);
+
+                    gain.gain.setValueAtTime(0.05, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.2);
+
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 0.2);
+                },
+                playGameOver: function () {
+                    if (!this.ctx) return;
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(200, this.ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(50, this.ctx.currentTime + 0.5);
+
+                    gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.5);
+
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 0.5);
+                }
+            };
+
+            // Game Entities
+            const player = {
+                x: 50, // Will be scaled
+                y: 0,
+                width: 40,
+                height: 40,
+                dy: 0,
+                jumpForce: 13,
+                gravity: 0.6,
+                grounded: false,
+                rotation: 0,
+                state: 'run' // run, jump, hit
+            };
+
+            let obstacles = [];
+            let particles = [];
+            let clouds = [];
+
+            // Resize Canvas & Responsive Logic
+            function resizeGame() {
+                const isMobile = window.innerWidth < 768;
+                const cssWidth = window.innerWidth;
+                const cssHeight = isMobile ? 300 : 400; // Shorter on mobile
+
+                // High-DPI Scaling
+                const dpr = window.devicePixelRatio || 1;
+                canvas.width = cssWidth * dpr;
+                canvas.height = cssHeight * dpr;
+
+                canvas.style.width = cssWidth + 'px';
+                canvas.style.height = cssHeight + 'px';
+
+                ctx.scale(dpr, dpr);
+
+                // Calculate scale ratio based on a reference width (e.g., 1000px)
+                // But mainly we just want things to be readable on mobile
+                scaleRatio = isMobile ? 0.7 : 1.0;
+
+                // Adjust player size/pos
+                player.width = 40 * scaleRatio;
+                player.height = 40 * scaleRatio;
+                player.x = cssWidth * 0.15; // 15% from left
+
+                // Adjust physics
+                player.jumpForce = 13 * scaleRatio;
+                player.gravity = 0.6 * scaleRatio;
+
+                // Ensure player is on ground if not jumping
+                if (player.grounded) {
+                    // Move down slightly (reduced offset to 2)
+                    player.y = cssHeight - (50 * scaleRatio) - player.height - (2 * scaleRatio);
+                }
+
+                // Update overlay height
+                if (overlay.classList.contains('active')) {
+                    overlay.style.height = cssHeight + 'px';
+                }
+            }
+            window.addEventListener('resize', resizeGame);
+
+            // Input
+            function jump() {
+                if (gameActive && player.grounded) {
+                    player.dy = -player.jumpForce;
+                    player.grounded = false;
+                    player.state = 'jump';
+                    createParticles(player.x, player.y + player.height / 2, 5, '#D4AF37'); // Dust
+                    GameAudio.playJump();
+                }
+            }
+
+            window.addEventListener('keydown', e => {
+                if (e.code === 'Space' && gameActive) jump();
+            });
+            canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                if (gameActive) jump();
+            });
+            canvas.addEventListener('click', () => {
+                if (gameActive) jump();
+            });
+
+            // Particles
+            function createParticles(x, y, count, color) {
+                for (let i = 0; i < count; i++) {
+                    particles.push({
+                        x: x,
+                        y: y,
+                        vx: (Math.random() - 0.5) * 5 * scaleRatio,
+                        vy: (Math.random() - 0.5) * 5 * scaleRatio,
+                        life: 1.0,
+                        color: color
+                    });
+                }
+            }
+
+            // Game Loop
+            function update() {
+                if (!gameActive) return;
+
+                // Clear rect uses CSS dimensions because we scaled the context
+                const cssWidth = parseFloat(canvas.style.width);
+                const cssHeight = parseFloat(canvas.style.height);
+
+                ctx.clearRect(0, 0, cssWidth, cssHeight);
+                frame++;
+
+                // --- Background (Parallax) ---
+                // Sky/Wall
+                // ctx.fillStyle = '#faf8f3';
+                // ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Clouds
+                if (frame % 200 === 0) {
+                    clouds.push({ x: cssWidth, y: Math.random() * (cssHeight / 2) + 20, speed: (0.5 + Math.random() * 0.5) * scaleRatio });
+                }
+                ctx.fillStyle = 'rgba(255,255,255,0.6)';
+                for (let i = 0; i < clouds.length; i++) {
+                    let c = clouds[i];
+                    c.x -= c.speed;
+                    ctx.beginPath();
+                    ctx.arc(c.x, c.y, 30 * scaleRatio, 0, Math.PI * 2);
+                    ctx.arc(c.x + (20 * scaleRatio), c.y - (10 * scaleRatio), 40 * scaleRatio, 0, Math.PI * 2);
+                    ctx.arc(c.x + (40 * scaleRatio), c.y, 30 * scaleRatio, 0, Math.PI * 2);
+                    ctx.fill();
+                    if (c.x < -100) { clouds.splice(i, 1); i--; }
+                }
+
+                // Ground Line
+                const groundOffset = 50 * scaleRatio;
+                const groundY = cssHeight - groundOffset;
+                ctx.beginPath();
+                ctx.moveTo(0, groundY);
+                ctx.lineTo(cssWidth, groundY);
+                ctx.strokeStyle = '#593513';
+                ctx.lineWidth = 3 * scaleRatio;
+                ctx.stroke();
+
+                // --- Player Physics ---
+                player.dy += player.gravity;
+                player.y += player.dy;
+
+                // Ground Collision
+                // Target Y: groundY - player.height - 2 (moved down)
+                const targetGroundY = groundY - player.height - (2 * scaleRatio);
+
+                if (player.y > targetGroundY) {
+                    player.y = targetGroundY;
+                    player.dy = 0;
+                    player.grounded = true;
+                    player.state = 'run';
+                    player.rotation = 0;
+                } else {
+                    // In air rotation
+                    player.rotation += 0.1;
+                }
+
+                // Draw Player (Image)
+                ctx.save();
+                ctx.translate(player.x + player.width / 2, player.y + player.height / 2);
+                ctx.rotate(player.rotation);
+                ctx.drawImage(playerImg, -player.width / 2, -player.height / 2, player.width, player.height);
+                ctx.restore();
+
+                // --- Obstacles ---
+                // Spawn Logic
+                if (frame % Math.max(60, 120 - Math.floor(score / 5)) === 0) {
+                    const typeRand = Math.random();
+                    let type = 'rolling-pin';
+                    if (score > 10 && typeRand > 0.6) type = 'baguette';
+                    if (score > 20 && typeRand > 0.85) type = 'jam';
+
+                    // Scale dimensions
+                    let w, h, yOff;
+                    if (type === 'rolling-pin') { w = 40; h = 15; yOff = 0; }
+                    else if (type === 'baguette') { w = 15; h = 60; yOff = 0; }
+                    else { w = 25; h = 30; yOff = 0; }
+
+                    obstacles.push({
+                        x: cssWidth,
+                        y: groundY,
+                        type: type,
+                        width: w * scaleRatio,
+                        height: h * scaleRatio
+                    });
+                }
+
+                // Update Obstacles
+                for (let i = 0; i < obstacles.length; i++) {
+                    let obs = obstacles[i];
+                    obs.x -= gameSpeed * scaleRatio;
+
+                    // Draw Obstacle
+                    ctx.save();
+                    ctx.translate(obs.x, obs.y);
+
+                    if (obs.type === 'rolling-pin') {
+                        // Rolling Pin (Low, Jump over)
+                        ctx.fillStyle = '#8B4513'; // Wood
+                        ctx.fillRect(0, -obs.height, obs.width, obs.height - (5 * scaleRatio)); // Body
+                        ctx.fillStyle = '#A0522D';
+                        ctx.fillRect(-5 * scaleRatio, -obs.height + (2 * scaleRatio), 5 * scaleRatio, obs.height / 2); // Handle
+                        ctx.fillRect(obs.width, -obs.height + (2 * scaleRatio), 5 * scaleRatio, obs.height / 2); // Handle
+                    } else if (obs.type === 'baguette') {
+                        // Baguette (Tall, Jump high/early)
+                        ctx.fillStyle = '#DAA520';
+                        ctx.strokeStyle = '#8B4513';
+                        ctx.lineWidth = 1.5;
+                        ctx.beginPath();
+                        ctx.ellipse(obs.width / 2, -obs.height / 2, obs.width / 2, obs.height / 2, 0, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.stroke();
+                        // Cuts
+                        ctx.beginPath();
+                        ctx.moveTo(obs.width * 0.3, -obs.height * 0.8); ctx.lineTo(obs.width * 0.7, -obs.height * 0.6);
+                        ctx.moveTo(obs.width * 0.3, -obs.height * 0.5); ctx.lineTo(obs.width * 0.7, -obs.height * 0.3);
+                        ctx.stroke();
+                    } else if (obs.type === 'jam') {
+                        // Jam Jar (Block)
+                        ctx.fillStyle = '#DC143C'; // Red Jam
+                        ctx.fillRect(0, -obs.height, obs.width, obs.height);
+                        ctx.fillStyle = '#fff'; // Label
+                        ctx.fillRect(2 * scaleRatio, -obs.height + (5 * scaleRatio), obs.width - (4 * scaleRatio), obs.height / 2);
+                        ctx.fillStyle = '#ccc'; // Lid
+                        ctx.fillRect(-2 * scaleRatio, -obs.height - (2 * scaleRatio), obs.width + (4 * scaleRatio), 5 * scaleRatio);
+                    }
+
+                    ctx.restore();
+
+                    // Collision Detection (Simple AABB)
+                    // Adjust hitbox based on type
+                    let hitX = obs.x;
+                    let hitY = obs.y - obs.height;
+                    let hitW = obs.width;
+                    let hitH = obs.height;
+
+                    // Player Hitbox (approx)
+                    let pX = player.x + (5 * scaleRatio);
+                    let pY = player.y + (5 * scaleRatio);
+                    let pW = player.width - (10 * scaleRatio);
+                    let pH = player.height - (10 * scaleRatio);
+
+                    if (
+                        pX < hitX + hitW &&
+                        pX + pW > hitX &&
+                        pY < hitY + hitH &&
+                        pY + pH > hitY
+                    ) {
+                        GameAudio.playGameOver();
+                        gameOver();
+                    }
+
+                    // Remove off-screen
+                    if (obs.x + obs.width < -50) {
+                        obstacles.splice(i, 1);
+                        i--;
+                        score++;
+                        scoreDisplay.innerText = score;
+                        GameAudio.playScore();
+
+                        // Speed Up
+                        if (score % 5 === 0) {
+                            gameSpeed += 0.5;
+                            createParticles(canvas.width / 2, canvas.height / 2, 10, '#fff'); // Speed effect
+                        }
+                    }
+                }
+
+                // --- Particles ---
+                for (let i = 0; i < particles.length; i++) {
+                    let p = particles[i];
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.life -= 0.05;
+                    p.vy += 0.2; // Gravity
+
+                    ctx.fillStyle = p.color;
+                    ctx.globalAlpha = p.life;
+                    ctx.fillRect(p.x, p.y, 4 * scaleRatio, 4 * scaleRatio);
+                    ctx.globalAlpha = 1.0;
+
+                    if (p.life <= 0) {
+                        particles.splice(i, 1);
+                        i--;
+                    }
+                }
+
+                animationId = requestAnimationFrame(update);
+            }
+
+            function startGame() {
+                GameAudio.init(); // Init audio context on user gesture
+                resizeGame();
+                gameActive = true;
+                score = 0;
+                gameSpeed = 6;
+                obstacles = [];
+                particles = [];
+                clouds = [];
+                scoreDisplay.innerText = '0';
+                gameOverMsg.style.display = 'none';
+                overlay.classList.add('active');
+                // Force height update for transition
+                setTimeout(() => {
+                    overlay.style.height = canvas.style.height;
+                }, 10);
+
+                prompt.classList.remove('visible');
+                setTimeout(() => { prompt.style.display = 'none'; }, 300); // Wait for fade out
+
+                // Hide factory temporarily to avoid visual clutter? 
+                // Or keep it as "launcher". Let's keep it.
+
+                update();
+            }
+
+            function gameOver() {
+                gameActive = false;
+                cancelAnimationFrame(animationId);
+                gameOverMsg.style.display = 'block';
+            }
+
+            function exitGame() {
+                overlay.classList.remove('active');
+                overlay.style.height = '0';
+                gameActive = false;
+                prompt.style.display = 'none';
+                // Reset factory speed?
+            }
+
+            // Event Listeners
+            playYes.addEventListener('click', startGame);
+            playNo.addEventListener('click', () => {
+                prompt.classList.remove('visible');
+                setTimeout(() => { prompt.style.display = 'none'; }, 300);
+            });
+            restartBtn.addEventListener('click', startGame);
+            exitBtn.addEventListener('click', exitGame);
+
+            // Expose trigger
+            window.triggerGamePrompt = function () {
+                if (prompt.style.display !== 'block' && !gameActive && !overlay.classList.contains('active')) {
+                    prompt.style.display = 'block';
+                    // Force reflow
+                    void prompt.offsetWidth;
+                    prompt.classList.add('visible');
+                }
+            };
+        })();
+    </script>
+
+</html>

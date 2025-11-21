@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
+    <title>BakeLab</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@300;400&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/cal-sans@1.0.1/index.min.css" rel="stylesheet">
+    <script defer src="https://cloud.umami.is/script.js" data-website-id="82364d02-ef99-45f6-b1f2-37c338543b86"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Serif', Georgia, serif;
+            background-color: #faf8f3;
+            color: #1a1a1a;
+            line-height: 1.7;
+            font-size: 16px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 40px;
+        }
+
+        .header-link {
+            text-decoration: none;
+            display: block;
+            transition: opacity 0.2s ease;
+            cursor: pointer;
+        }
+
+        .header-link:hover {
+            opacity: 0.8;
+        }
+
+        .header-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 60px;
+        }
+
+        .logo {
+            /* Insert your logo here */
+            width: 80px;
+            height: 80px;
+            background-color: transparent;
+            border-radius: 8px;
+            flex-shrink: 0;
+            margin-top: -8px;
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        h1 {
+            font-family: 'Cal Sans', sans-serif;
+            font-size: 56px;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            color: #8B5A3C;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .badge {
+            display: inline-block;
+            background-color: #f5f5f5;
+            color: #666;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-right: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .intro {
+            font-size: 20px;
+            line-height: 1.6;
+            margin-bottom: 60px;
+            color: #2a2a2a;
+        }
+
+        section {
+            margin-bottom: 40px;
+        }
+
+        h2 {
+            font-size: 22px;
+            font-weight: 400;
+            margin-bottom: 24px;
+            color: #1a1a1a;
+        }
+
+        p {
+            margin-bottom: 24px;
+            color: #333;
+        }
+
+        strong {
+            font-weight: bold;
+            color: #6B4423;
+        }
+
+        .content-block {
+            margin-bottom: 30px;
+        }
+
+        .tagline {
+            font-style: italic;
+            color: #666;
+            margin-bottom: 16px;
+        }
+
+        a {
+            color: #1a1a1a;
+            text-decoration: underline;
+            text-decoration-color: #ccc;
+            text-underline-offset: 3px;
+            transition: text-decoration-color 0.2s ease;
+        }
+
+        a:hover {
+            text-decoration-color: #1a1a1a;
+        }
+
+        footer {
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid #e5e5e5;
+            text-align: center;
+            font-size: 14px;
+            color: #999;
+        }
+
+        footer a {
+            color: #666;
+            margin: 0 12px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 24px 32px;
+            }
+
+            .header-section {
+                gap: 12px;
+                margin-bottom: 40px;
+            }
+
+            .logo {
+                width: 60px;
+                height: 60px;
+            }
+
+            h1 {
+                font-size: 40px;
+            }
+
+            .intro {
+                font-size: 18px;
+                margin-bottom: 40px;
+            }
+
+            h2 {
+                font-size: 18px;
+            }
+
+            body {
+                font-size: 14px;
+            }
+
+            section {
+                margin-bottom: 32px;
+            }
+
+            footer {
+                margin-top: 40px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px 24px;
+            }
+
+            .header-section {
+                gap: 10px;
+                margin-bottom: 32px;
+            }
+
+            .logo {
+                width: 50px;
+                height: 50px;
+            }
+
+            h1 {
+                font-size: 32px;
+            }
+
+            .intro {
+                font-size: 16px;
+                margin-bottom: 32px;
+            }
+
+            h2 {
+                font-size: 16px;
+                margin-bottom: 16px;
+            }
+
+            p {
+                margin-bottom: 16px;
+            }
+
+            section {
+                margin-bottom: 24px;
+            }
+
+            .content-block {
+                margin-bottom: 20px;
+            }
+
+            footer {
+                margin-top: 32px;
+                padding-top: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <a href="https://bakelab.ai" class="header-link">
+            <div class="header-section">
+                <div class="logo">
+                    <img src="bakelab.png" alt="BakeLab Logo">
+                </div>
+                <h1>BAKELAB</h1>
+            </div>
+        </a>
+
+        <!-- Badge and Introduction -->
+        <!-- <div class="intro">
+            <p>
+                BakeLab is an industry research lab devoted to the art and science of data. Our members come from leading universities and frontier AI labs, united by a shared belief that intelligence, like bread, rises from the quality of its ingredients. We bake data with care, precision, and creativity.
+            </p>
+        </div> -->
+
+        <!-- Content Section -->
+        <section>
+            <div class="content-block">
+                <!-- <h2>Our Work</h2> -->
+                <!-- <p class="tagline">Essential ingredients for intelligent systems.</p> -->
+                <!-- <h2>What We Offer</h2> -->
+                <!-- <p class="tagline">Data crafted with precision.</p> -->
+                <p>
+                    <strong>🍞BakeLab</strong> is an industry research lab devoted to the art and science of data. Our members come from leading universities and frontier AI labs, united by a shared belief that intelligence, like bread, rises from the quality of its ingredients. We bake data with care, precision, and creativity.
+                </p>
+                <p>
+                    We create high-quality datasets across <strong>Agentic</strong>, <strong>STEM</strong>, and <strong>Humanities</strong> domains, serving as the essential ingredients for post-training, fine-tuning, and reinforcement learning of foundation models.
+                </p>
+                <p>
+                    Through BakeLab, we offer 📦 <strong>off-the-shelf datasets</strong> that are rigorously curated, and 🛠️ <strong>customized datasets</strong> carefully designed across disciplines, helping models learn with precision and depth.
+                </p>
+            </div>
+        </section>
+
+        <!-- Call to Action -->
+        <section>
+            <div class="content-block">
+                <h2>Get in Touch</h2>
+                <p>
+                    <strong>Interested in our data?</strong><br>
+                    📧 <a href="mailto:sales@bakelab.ai">sales@bakelab.ai</a>
+                </p>
+                <p>
+                    <strong>Interested in joining us?</strong><br>
+                    📧 <a href="mailto:careers@bakelab.ai">careers@bakelab.ai</a> — we welcome data researchers and engineers.
+                </p>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <p><a href="https://bakelab.ai">Bake AI Inc © 2025</a></p>
+        </footer>
+    </div>
+</body>
+</html>
+
