@@ -850,7 +850,7 @@
 
         .game-message {
             position: absolute;
-            top: 40%;
+            top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
@@ -858,22 +858,25 @@
             color: var(--brand-color);
             display: none;
             z-index: 3001;
+            padding: 15px;
         }
 
         .game-message h2 {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            text-shadow: 3px 3px 0px #fff;
+            text-shadow: 2px 2px 0px #fff;
         }
 
         @media (max-width: 768px) {
             .game-message h2 {
-                font-size: 2rem;
+                font-size: 1.8rem !important;
             }
 
             .game-message p {
-                font-size: 1rem !important;
-                /* Override inline style */
+                font-size: 0.9rem !important;
+            }
+
+            #bonus-logo {
+                width: 45px !important;
+                height: 45px !important;
             }
         }
 
@@ -948,13 +951,14 @@
         <div class="game-ui">Score: <span id="score-display">0</span></div>
         <canvas id="game-canvas"></canvas>
         <div class="game-message" id="game-over-msg">
-            <h2>Ouch!</h2>
-            <p style="font-size: 1.5rem; margin-bottom: 10px;">You got toasted!</p>
+            <h2 style="margin: 0 0 5px 0;">Ouch!</h2>
+            <p style="font-size: 1.2rem; margin: 0 0 10px 0;">You got toasted!</p>
             <img id="bonus-logo" src="" alt="Bonus" style="max-width: 120px; max-height: 120px; margin: 10px auto; display: none;">
-            <p id="bonus-text" style="font-size: 1rem; color: #D4AF37; margin-bottom: 15px;"></p>
-            <button class="game-btn" id="restart-btn">Run Again</button>
-            <button class="game-btn" id="exit-btn"
-                style="background-color: #e0e0e0; color: #666; margin-left: 10px;">Exit</button>
+            <div>
+                <button class="game-btn" id="restart-btn">Run Again</button>
+                <button class="game-btn" id="exit-btn"
+                    style="background-color: #e0e0e0; color: #666; margin-left: 10px;">Exit</button>
+            </div>
         </div>
     </div>
 
@@ -1474,7 +1478,6 @@
                 gameOverMsg.style.display = 'none';
                 // Hide bonus logo
                 document.getElementById('bonus-logo').style.display = 'none';
-                document.getElementById('bonus-text').textContent = '';
                 overlay.classList.add('active');
                 // Force height update for transition
                 setTimeout(() => {
@@ -1496,29 +1499,22 @@
 
                 // Show bonus logo based on score
                 const bonusLogo = document.getElementById('bonus-logo');
-                const bonusText = document.getElementById('bonus-text');
-                let logoNum, bonusMessage;
+                let logoNum;
 
                 if (score < 5) {
                     logoNum = '01';
-                    bonusMessage = 'Keep trying!';
                 } else if (score < 10) {
                     logoNum = '02';
-                    bonusMessage = 'Not bad!';
                 } else if (score < 20) {
                     logoNum = '03';
-                    bonusMessage = 'Great job!';
                 } else if (score < 50) {
                     logoNum = '04';
-                    bonusMessage = 'Amazing!';
                 } else {
                     logoNum = '05';
-                    bonusMessage = 'Legendary Baker!';
                 }
 
                 bonusLogo.src = `BakeLab-${logoNum}.png`;
                 bonusLogo.style.display = 'block';
-                bonusText.textContent = bonusMessage;
 
                 gameOverMsg.style.display = 'block';
             }
