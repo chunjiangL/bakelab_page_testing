@@ -1055,7 +1055,7 @@
                 rotation: 0,
                 state: 'run', // run, jump, hit, falling
                 fallingIntoJar: false,
-                jarX: 0, // X position of jar player is falling into
+                jarRef: null, // Reference to the jar obstacle player is falling into
                 jarBottom: 0, // Bottom Y position inside the jar
                 stuckInJar: false // Whether player is stuck in jam
             };
@@ -1193,7 +1193,7 @@
                 const targetGroundY = groundY - player.height - (2 * scaleRatio);
 
                 if (player.fallingIntoJar) {
-                    // Player is falling into a jam jar - fall and spin
+                    // Player is falling into a jam jar - world stops, player falls straight down
                     player.rotation += 0.2;
                     // Check if player has reached the bottom of the jar
                     if (player.y >= player.jarBottom) {
@@ -1285,7 +1285,10 @@
                 // Update Obstacles
                 for (let i = 0; i < obstacles.length; i++) {
                     let obs = obstacles[i];
-                    obs.x -= gameSpeed * scaleRatio;
+                    // Stop moving if player is falling into jar
+                    if (!player.fallingIntoJar) {
+                        obs.x -= gameSpeed * scaleRatio;
+                    }
 
                     // Draw Obstacle
                     ctx.save();
@@ -1336,14 +1339,6 @@
                         // Draw jar rim at ground level (the opening)
                         ctx.fillStyle = '#888';
                         ctx.fillRect(-2 * scaleRatio, -3 * scaleRatio, obs.width + 4 * scaleRatio, 6 * scaleRatio);
-
-                        // Draw label on jar
-                        ctx.fillStyle = '#fff';
-                        ctx.fillRect(8 * scaleRatio, obs.height * 0.1, obs.width - 16 * scaleRatio, obs.height * 0.2);
-                        ctx.fillStyle = '#DC143C';
-                        ctx.font = `bold ${7 * scaleRatio}px Arial`;
-                        ctx.textAlign = 'center';
-                        ctx.fillText('JAM', obs.width / 2, obs.height * 0.25);
                     }
 
                     ctx.restore();
@@ -1358,12 +1353,12 @@
                         // If player is grounded and their center is over the jar opening, they fall in
                         if (player.grounded && !player.fallingIntoJar && playerCenterX > jarLeft && playerCenterX < jarRight) {
                             player.fallingIntoJar = true;
-                            player.jarX = obs.x;
-                            // Player stops in the jam (bottom 60% of jar)
-                            player.jarBottom = obs.y + obs.height * 0.5;
+                            player.jarRef = obs; // Store reference to the jar
+                            // Player stops in the jam - about 20px below ground level
+                            player.jarBottom = obs.y + 20 * scaleRatio;
                             player.state = 'falling';
                             player.grounded = false;
-                            player.dy = 2;
+                            player.dy = 3;
                             GameAudio.playGameOver();
                         }
                     } else if (!player.fallingIntoJar) {
@@ -1440,6 +1435,7 @@
                 // Reset player state
                 player.fallingIntoJar = false;
                 player.stuckInJar = false;
+                player.jarRef = null;
                 player.jarBottom = 0;
                 player.state = 'run';
                 player.rotation = 0;
