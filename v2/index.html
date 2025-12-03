@@ -949,7 +949,9 @@
         <canvas id="game-canvas"></canvas>
         <div class="game-message" id="game-over-msg">
             <h2>Ouch!</h2>
-            <p style="font-size: 1.5rem; margin-bottom: 20px;">You got toasted!</p>
+            <p style="font-size: 1.5rem; margin-bottom: 10px;">You got toasted!</p>
+            <img id="bonus-logo" src="" alt="Bonus" style="max-width: 120px; max-height: 120px; margin: 10px auto; display: none;">
+            <p id="bonus-text" style="font-size: 1rem; color: #D4AF37; margin-bottom: 15px;"></p>
             <button class="game-btn" id="restart-btn">Run Again</button>
             <button class="game-btn" id="exit-btn"
                 style="background-color: #e0e0e0; color: #666; margin-left: 10px;">Exit</button>
@@ -1231,8 +1233,8 @@
                     // Scale dimensions
                     let w, h, yOff;
                     if (type === 'rolling-pin') { w = 40; h = 15; yOff = 0; }
-                    else if (type === 'baguette') { w = 15; h = 60; yOff = 0; }
-                    else if (type === 'jam-trap') { w = 65; h = 60; yOff = 0; } // Jam jar: player falls into it
+                    else if (type === 'baguette') { w = 30; h = 90; yOff = 0; }
+                    else if (type === 'jam-trap') { w = 60; h = 60; yOff = 0; } // Jam jar: player falls into it
                     else { w = 25; h = 30; yOff = 0; }
 
                     obstacles.push({
@@ -1251,7 +1253,7 @@
                     const minDistance = 40 * scaleRatio;
                     const maxDistance = 80 * scaleRatio;
                     const randomDistance = minDistance + Math.random() * (maxDistance - minDistance);
-                    const suddenJarWidth = 65 * scaleRatio;
+                    const suddenJarWidth = 60 * scaleRatio;
                     const spawnX = player.x + player.width + randomDistance;
 
                     // Check if spawn location overlaps with any existing obstacle
@@ -1296,19 +1298,45 @@
                         ctx.fillRect(-5 * scaleRatio, -obs.height + (2 * scaleRatio), 5 * scaleRatio, obs.height / 2); // Handle
                         ctx.fillRect(obs.width, -obs.height + (2 * scaleRatio), 5 * scaleRatio, obs.height / 2); // Handle
                     } else if (obs.type === 'baguette') {
-                        // Baguette (Tall, Jump high/early)
-                        ctx.fillStyle = '#DAA520';
-                        ctx.strokeStyle = '#8B4513';
-                        ctx.lineWidth = 1.5;
+                        // Baguette (Tall, Jump high/early) - realistic French baguette
+                        // Main body - golden brown elongated shape
+                        ctx.fillStyle = '#D4A84B'; // Golden crust
                         ctx.beginPath();
-                        ctx.ellipse(obs.width / 2, -obs.height / 2, obs.width / 2, obs.height / 2, 0, 0, Math.PI * 2);
+                        // Draw elongated rounded rectangle shape
+                        const bw = obs.width;
+                        const bh = obs.height;
+                        const radius = bw / 2;
+                        ctx.moveTo(bw / 2, -bh); // Top center
+                        ctx.quadraticCurveTo(bw, -bh, bw, -bh + radius); // Top right curve
+                        ctx.lineTo(bw, -radius); // Right side
+                        ctx.quadraticCurveTo(bw, 0, bw / 2, 0); // Bottom right curve
+                        ctx.quadraticCurveTo(0, 0, 0, -radius); // Bottom left curve
+                        ctx.lineTo(0, -bh + radius); // Left side
+                        ctx.quadraticCurveTo(0, -bh, bw / 2, -bh); // Top left curve
+                        ctx.closePath();
                         ctx.fill();
+
+                        // Darker crust edges
+                        ctx.strokeStyle = '#8B6914';
+                        ctx.lineWidth = 2 * scaleRatio;
                         ctx.stroke();
-                        // Cuts
+
+                        // Diagonal score marks (cuts on baguette)
+                        ctx.strokeStyle = '#C4983B';
+                        ctx.lineWidth = 2 * scaleRatio;
                         ctx.beginPath();
-                        ctx.moveTo(obs.width * 0.3, -obs.height * 0.8); ctx.lineTo(obs.width * 0.7, -obs.height * 0.6);
-                        ctx.moveTo(obs.width * 0.3, -obs.height * 0.5); ctx.lineTo(obs.width * 0.7, -obs.height * 0.3);
+                        // Multiple diagonal cuts
+                        ctx.moveTo(bw * 0.2, -bh * 0.85); ctx.lineTo(bw * 0.8, -bh * 0.75);
+                        ctx.moveTo(bw * 0.2, -bh * 0.65); ctx.lineTo(bw * 0.8, -bh * 0.55);
+                        ctx.moveTo(bw * 0.2, -bh * 0.45); ctx.lineTo(bw * 0.8, -bh * 0.35);
+                        ctx.moveTo(bw * 0.2, -bh * 0.25); ctx.lineTo(bw * 0.8, -bh * 0.15);
                         ctx.stroke();
+
+                        // Inner lighter color for depth
+                        ctx.fillStyle = '#E8C872';
+                        ctx.beginPath();
+                        ctx.ellipse(bw / 2, -bh / 2, bw * 0.25, bh * 0.35, 0, 0, Math.PI * 2);
+                        ctx.fill();
                     } else if (obs.type === 'jam-trap' || obs.type === 'sudden-jam') {
                         // Jam Jar Trap - embedded in ground, player falls into it
                         // First, clear the ground line where the jar opening is
@@ -1444,6 +1472,9 @@
                 player.grounded = true;
                 scoreDisplay.innerText = '0';
                 gameOverMsg.style.display = 'none';
+                // Hide bonus logo
+                document.getElementById('bonus-logo').style.display = 'none';
+                document.getElementById('bonus-text').textContent = '';
                 overlay.classList.add('active');
                 // Force height update for transition
                 setTimeout(() => {
@@ -1462,6 +1493,33 @@
             function gameOver() {
                 gameActive = false;
                 cancelAnimationFrame(animationId);
+
+                // Show bonus logo based on score
+                const bonusLogo = document.getElementById('bonus-logo');
+                const bonusText = document.getElementById('bonus-text');
+                let logoNum, bonusMessage;
+
+                if (score < 5) {
+                    logoNum = '01';
+                    bonusMessage = 'Keep trying!';
+                } else if (score < 10) {
+                    logoNum = '02';
+                    bonusMessage = 'Not bad!';
+                } else if (score < 20) {
+                    logoNum = '03';
+                    bonusMessage = 'Great job!';
+                } else if (score < 50) {
+                    logoNum = '04';
+                    bonusMessage = 'Amazing!';
+                } else {
+                    logoNum = '05';
+                    bonusMessage = 'Legendary Baker!';
+                }
+
+                bonusLogo.src = `BakeLab-${logoNum}.png`;
+                bonusLogo.style.display = 'block';
+                bonusText.textContent = bonusMessage;
+
                 gameOverMsg.style.display = 'block';
             }
 
