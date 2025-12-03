@@ -1053,7 +1053,9 @@
                 gravity: 0.6,
                 grounded: false,
                 rotation: 0,
-                state: 'run' // run, jump, hit
+                state: 'run', // run, jump, hit, falling
+                fallingIntoHole: false,
+                holeX: 0 // Track which hole player is falling into
             };
 
             let obstacles = [];
@@ -1188,7 +1190,14 @@
                 // Target Y: groundY - player.height - 2 (moved down)
                 const targetGroundY = groundY - player.height - (2 * scaleRatio);
 
-                if (player.y > targetGroundY) {
+                if (player.fallingIntoHole) {
+                    // Player is falling into a hole - keep falling and spinning
+                    player.rotation += 0.3;
+                    // Check if player has fallen off screen
+                    if (player.y > cssHeight + 50) {
+                        gameOver();
+                    }
+                } else if (player.y > targetGroundY) {
                     player.y = targetGroundY;
                     player.dy = 0;
                     player.grounded = true;
@@ -1199,8 +1208,14 @@
                     player.rotation += 0.1;
                 }
 
-                // Draw Player (Image)
+                // Draw Player (Image) - but clip if falling into hole
                 ctx.save();
+                if (player.fallingIntoHole) {
+                    // Create clipping region so player disappears into the hole
+                    ctx.beginPath();
+                    ctx.rect(0, 0, cssWidth, groundY);
+                    ctx.clip();
+                }
                 ctx.translate(player.x + player.width / 2, player.y + player.height / 2);
                 ctx.rotate(player.rotation);
                 ctx.drawImage(playerImg, -player.width / 2, -player.height / 2, player.width, player.height);
@@ -1271,22 +1286,39 @@
                         ctx.fillRect(-2 * scaleRatio, -obs.height - (2 * scaleRatio), obs.width + (4 * scaleRatio), 5 * scaleRatio);
                     } else if (obs.type === 'hole') {
                         // Hole in the ground - player must jump over
-                        // Draw dark pit
-                        ctx.fillStyle = '#1a1a1a'; // Dark hole
-                        ctx.fillRect(0, 0, obs.width, obs.height); // Hole goes below ground
-                        // Draw hole edges (cracked ground effect)
+                        // Clear the ground line in this area (create a gap)
+                        ctx.save();
+                        ctx.globalCompositeOperation = 'destination-out';
+                        ctx.fillRect(-2 * scaleRatio, -5 * scaleRatio, obs.width + 4 * scaleRatio, 10 * scaleRatio);
+                        ctx.restore();
+
+                        // Draw subtle shadow/depth gradient inside the hole
+                        const gradient = ctx.createLinearGradient(0, 0, 0, obs.height * 0.5);
+                        gradient.addColorStop(0, 'rgba(89, 53, 19, 0.3)');
+                        gradient.addColorStop(1, 'rgba(89, 53, 19, 0)');
+                        ctx.fillStyle = gradient;
+                        ctx.fillRect(0, 0, obs.width, obs.height * 0.5);
+
+                        // Draw broken ground edges
                         ctx.fillStyle = '#593513';
-                        ctx.fillRect(-3 * scaleRatio, -3 * scaleRatio, 6 * scaleRatio, 6 * scaleRatio); // Left edge
-                        ctx.fillRect(obs.width - 3 * scaleRatio, -3 * scaleRatio, 6 * scaleRatio, 6 * scaleRatio); // Right edge
-                        // Draw some depth lines
-                        ctx.strokeStyle = '#333';
-                        ctx.lineWidth = 1;
+                        // Left edge - jagged
                         ctx.beginPath();
-                        ctx.moveTo(5 * scaleRatio, 10 * scaleRatio);
-                        ctx.lineTo(obs.width - 5 * scaleRatio, 15 * scaleRatio);
-                        ctx.moveTo(5 * scaleRatio, 25 * scaleRatio);
-                        ctx.lineTo(obs.width - 5 * scaleRatio, 30 * scaleRatio);
-                        ctx.stroke();
+                        ctx.moveTo(0, -8 * scaleRatio);
+                        ctx.lineTo(-4 * scaleRatio, 0);
+                        ctx.lineTo(0, 8 * scaleRatio);
+                        ctx.lineTo(4 * scaleRatio, 4 * scaleRatio);
+                        ctx.lineTo(2 * scaleRatio, -4 * scaleRatio);
+                        ctx.closePath();
+                        ctx.fill();
+                        // Right edge - jagged
+                        ctx.beginPath();
+                        ctx.moveTo(obs.width, -8 * scaleRatio);
+                        ctx.lineTo(obs.width + 4 * scaleRatio, 0);
+                        ctx.lineTo(obs.width, 8 * scaleRatio);
+                        ctx.lineTo(obs.width - 4 * scaleRatio, 4 * scaleRatio);
+                        ctx.lineTo(obs.width - 2 * scaleRatio, -4 * scaleRatio);
+                        ctx.closePath();
+                        ctx.fill();
                     }
 
                     ctx.restore();
@@ -1298,12 +1330,16 @@
                         let holeRight = obs.x + obs.width - (10 * scaleRatio);
                         let playerCenterX = player.x + player.width / 2;
 
-                        // If player is grounded and their center is over the hole, they fall in
-                        if (player.grounded && playerCenterX > holeLeft && playerCenterX < holeRight) {
+                        // If player is grounded and their center is over the hole, they start falling
+                        if (player.grounded && !player.fallingIntoHole && playerCenterX > holeLeft && playerCenterX < holeRight) {
+                            player.fallingIntoHole = true;
+                            player.holeX = obs.x + obs.width / 2; // Center of hole
+                            player.state = 'falling';
+                            player.grounded = false;
+                            player.dy = 2; // Start falling
                             GameAudio.playGameOver();
-                            gameOver();
                         }
-                    } else {
+                    } else if (!player.fallingIntoHole) {
                         // Regular obstacle collision (Simple AABB)
                         let hitX = obs.x;
                         let hitY = obs.y - obs.height;
@@ -1374,6 +1410,12 @@
                 obstacles = [];
                 particles = [];
                 clouds = [];
+                // Reset player state
+                player.fallingIntoHole = false;
+                player.state = 'run';
+                player.rotation = 0;
+                player.dy = 0;
+                player.grounded = true;
                 scoreDisplay.innerText = '0';
                 gameOverMsg.style.display = 'none';
                 overlay.classList.add('active');
