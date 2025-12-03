@@ -1055,7 +1055,9 @@
                 rotation: 0,
                 state: 'run', // run, jump, hit, falling
                 fallingIntoHole: false,
-                holeX: 0 // Track which hole player is falling into
+                holeX: 0, // Track which hole player is falling into
+                holeBottom: 0, // Bottom Y position of the hole
+                fellToBottom: false // Whether player has hit bottom of hole
             };
 
             let obstacles = [];
@@ -1193,9 +1195,18 @@
                 if (player.fallingIntoHole) {
                     // Player is falling into a hole - keep falling and spinning
                     player.rotation += 0.3;
-                    // Check if player has fallen off screen
-                    if (player.y > cssHeight + 50) {
-                        gameOver();
+                    // Check if player has reached the bottom of the hole
+                    if (player.y >= player.holeBottom) {
+                        player.y = player.holeBottom;
+                        player.dy = 0;
+                        player.rotation = 0; // Stop spinning
+                        // Wait a moment then game over
+                        if (!player.fellToBottom) {
+                            player.fellToBottom = true;
+                            setTimeout(() => {
+                                gameOver();
+                            }, 500); // Show player at bottom for 0.5 seconds
+                        }
                     }
                 } else if (player.y > targetGroundY) {
                     player.y = targetGroundY;
@@ -1246,12 +1257,15 @@
                     });
                 }
 
-                // Sudden Hole Trap - appears right in front of player!
+                // Sudden Hole Trap - appears close in front of player!
                 // Only after score > 10, small chance each frame, and not too often
                 if (score > 10 && !player.fallingIntoHole && player.grounded) {
-                    const warningDistance = 80 * scaleRatio;
+                    // Spawn range: 40-80px ahead of player (close but reactable)
+                    const minDistance = 40 * scaleRatio;
+                    const maxDistance = 80 * scaleRatio;
+                    const randomDistance = minDistance + Math.random() * (maxDistance - minDistance);
                     const suddenHoleWidth = 50 * scaleRatio;
-                    const spawnX = player.x + player.width + warningDistance;
+                    const spawnX = player.x + player.width + randomDistance;
 
                     // Check if spawn location overlaps with any existing obstacle
                     const hasObstacleNearby = obstacles.some(obs => {
@@ -1402,6 +1416,7 @@
                         if (player.grounded && !player.fallingIntoHole && playerCenterX > holeLeft && playerCenterX < holeRight) {
                             player.fallingIntoHole = true;
                             player.holeX = obs.x + obs.width / 2; // Center of hole
+                            player.holeBottom = obs.y + obs.height - player.height; // Bottom of hole
                             player.state = 'falling';
                             player.grounded = false;
                             player.dy = 2; // Start falling
@@ -1480,6 +1495,8 @@
                 clouds = [];
                 // Reset player state
                 player.fallingIntoHole = false;
+                player.fellToBottom = false;
+                player.holeBottom = 0;
                 player.state = 'run';
                 player.rotation = 0;
                 player.dy = 0;
