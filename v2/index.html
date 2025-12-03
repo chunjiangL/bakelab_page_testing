@@ -1246,6 +1246,36 @@
                     });
                 }
 
+                // Sudden Hole Trap - appears right in front of player!
+                // Only after score > 10, small chance each frame, and not too often
+                if (score > 10 && !player.fallingIntoHole && player.grounded) {
+                    const warningDistance = 80 * scaleRatio;
+                    const suddenHoleWidth = 50 * scaleRatio;
+                    const spawnX = player.x + player.width + warningDistance;
+
+                    // Check if spawn location overlaps with any existing obstacle
+                    const hasObstacleNearby = obstacles.some(obs => {
+                        const obsLeft = obs.x - 30 * scaleRatio; // Add buffer
+                        const obsRight = obs.x + obs.width + 30 * scaleRatio;
+                        const holeLeft = spawnX;
+                        const holeRight = spawnX + suddenHoleWidth;
+                        // Check overlap
+                        return !(holeRight < obsLeft || holeLeft > obsRight);
+                    });
+
+                    // 0.3% chance per frame to spawn sudden hole, only on clear ground
+                    if (!hasObstacleNearby && Math.random() < 0.003) {
+                        obstacles.push({
+                            x: spawnX,
+                            y: groundY,
+                            type: 'sudden-hole',
+                            width: suddenHoleWidth,
+                            height: 80 * scaleRatio,
+                            crackPhase: 1 // Immediately open
+                        });
+                    }
+                }
+
                 // Update Obstacles
                 for (let i = 0; i < obstacles.length; i++) {
                     let obs = obstacles[i];
@@ -1319,12 +1349,50 @@
                         ctx.lineTo(obs.width - 2 * scaleRatio, -4 * scaleRatio);
                         ctx.closePath();
                         ctx.fill();
+                    } else if (obs.type === 'sudden-hole') {
+                        // Sudden hole - just appears suddenly (same look as regular hole)
+                        // Mark as open immediately
+                        obs.crackPhase = 1;
+
+                        // Clear the ground line in this area (create a gap)
+                        ctx.save();
+                        ctx.globalCompositeOperation = 'destination-out';
+                        ctx.fillRect(-2 * scaleRatio, -5 * scaleRatio, obs.width + 4 * scaleRatio, 10 * scaleRatio);
+                        ctx.restore();
+
+                        // Draw subtle shadow/depth gradient inside the hole
+                        const gradient = ctx.createLinearGradient(0, 0, 0, obs.height * 0.5);
+                        gradient.addColorStop(0, 'rgba(89, 53, 19, 0.3)');
+                        gradient.addColorStop(1, 'rgba(89, 53, 19, 0)');
+                        ctx.fillStyle = gradient;
+                        ctx.fillRect(0, 0, obs.width, obs.height * 0.5);
+
+                        // Draw broken ground edges (same as regular hole)
+                        ctx.fillStyle = '#593513';
+                        // Left edge - jagged
+                        ctx.beginPath();
+                        ctx.moveTo(0, -8 * scaleRatio);
+                        ctx.lineTo(-4 * scaleRatio, 0);
+                        ctx.lineTo(0, 8 * scaleRatio);
+                        ctx.lineTo(4 * scaleRatio, 4 * scaleRatio);
+                        ctx.lineTo(2 * scaleRatio, -4 * scaleRatio);
+                        ctx.closePath();
+                        ctx.fill();
+                        // Right edge - jagged
+                        ctx.beginPath();
+                        ctx.moveTo(obs.width, -8 * scaleRatio);
+                        ctx.lineTo(obs.width + 4 * scaleRatio, 0);
+                        ctx.lineTo(obs.width, 8 * scaleRatio);
+                        ctx.lineTo(obs.width - 4 * scaleRatio, 4 * scaleRatio);
+                        ctx.lineTo(obs.width - 2 * scaleRatio, -4 * scaleRatio);
+                        ctx.closePath();
+                        ctx.fill();
                     }
 
                     ctx.restore();
 
                     // Collision Detection
-                    if (obs.type === 'hole') {
+                    if (obs.type === 'hole' || (obs.type === 'sudden-hole' && obs.crackPhase === 1)) {
                         // Hole collision: player falls in if grounded and overlapping
                         let holeLeft = obs.x + (10 * scaleRatio); // Slightly inset for fairness
                         let holeRight = obs.x + obs.width - (10 * scaleRatio);
