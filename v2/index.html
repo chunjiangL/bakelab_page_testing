@@ -1054,10 +1054,10 @@
                 grounded: false,
                 rotation: 0,
                 state: 'run', // run, jump, hit, falling
-                fallingIntoHole: false,
-                holeX: 0, // Track which hole player is falling into
-                holeBottom: 0, // Bottom Y position of the hole
-                fellToBottom: false // Whether player has hit bottom of hole
+                fallingIntoJar: false,
+                jarX: 0, // X position of jar player is falling into
+                jarBottom: 0, // Bottom Y position inside the jar
+                stuckInJar: false // Whether player is stuck in jam
             };
 
             let obstacles = [];
@@ -1192,20 +1192,20 @@
                 // Target Y: groundY - player.height - 2 (moved down)
                 const targetGroundY = groundY - player.height - (2 * scaleRatio);
 
-                if (player.fallingIntoHole) {
-                    // Player is falling into a hole - keep falling and spinning
-                    player.rotation += 0.3;
-                    // Check if player has reached the bottom of the hole
-                    if (player.y >= player.holeBottom) {
-                        player.y = player.holeBottom;
+                if (player.fallingIntoJar) {
+                    // Player is falling into a jam jar - fall and spin
+                    player.rotation += 0.2;
+                    // Check if player has reached the bottom of the jar
+                    if (player.y >= player.jarBottom) {
+                        player.y = player.jarBottom;
                         player.dy = 0;
-                        player.rotation = 0; // Stop spinning
-                        // Wait a moment then game over
-                        if (!player.fellToBottom) {
-                            player.fellToBottom = true;
+                        player.rotation = 0; // Stop spinning, stuck upright in jam
+                        // Stuck in jam - wait then game over
+                        if (!player.stuckInJar) {
+                            player.stuckInJar = true;
                             setTimeout(() => {
                                 gameOver();
-                            }, 500); // Show player at bottom for 0.5 seconds
+                            }, 800); // Show player stuck in jar for 0.8 seconds
                         }
                     }
                 } else if (player.y > targetGroundY) {
@@ -1219,14 +1219,8 @@
                     player.rotation += 0.1;
                 }
 
-                // Draw Player (Image) - but clip if falling into hole
+                // Draw Player (Image)
                 ctx.save();
-                if (player.fallingIntoHole) {
-                    // Create clipping region so player disappears into the hole
-                    ctx.beginPath();
-                    ctx.rect(0, 0, cssWidth, groundY);
-                    ctx.clip();
-                }
                 ctx.translate(player.x + player.width / 2, player.y + player.height / 2);
                 ctx.rotate(player.rotation);
                 ctx.drawImage(playerImg, -player.width / 2, -player.height / 2, player.width, player.height);
@@ -1237,15 +1231,14 @@
                 if (frame % Math.max(60, 120 - Math.floor(score / 5)) === 0) {
                     const typeRand = Math.random();
                     let type = 'rolling-pin';
-                    if (score > 5 && typeRand > 0.7) type = 'hole'; // Hole appears after score 5
+                    if (score > 5 && typeRand > 0.7) type = 'jam-trap'; // Jam jar trap appears after score 5
                     if (score > 10 && typeRand > 0.5 && typeRand <= 0.7) type = 'baguette';
-                    if (score > 20 && typeRand > 0.85) type = 'jam';
 
                     // Scale dimensions
                     let w, h, yOff;
                     if (type === 'rolling-pin') { w = 40; h = 15; yOff = 0; }
                     else if (type === 'baguette') { w = 15; h = 60; yOff = 0; }
-                    else if (type === 'hole') { w = 60; h = 80; yOff = 0; } // Hole: wide gap, height is depth
+                    else if (type === 'jam-trap') { w = 50; h = 60; yOff = 0; } // Jam jar: player falls into it
                     else { w = 25; h = 30; yOff = 0; }
 
                     obstacles.push({
@@ -1257,35 +1250,34 @@
                     });
                 }
 
-                // Sudden Hole Trap - appears close in front of player!
+                // Sudden Jam Jar Trap - appears close in front of player!
                 // Only after score > 10, small chance each frame, and not too often
-                if (score > 10 && !player.fallingIntoHole && player.grounded) {
+                if (score > 10 && !player.fallingIntoJar && player.grounded) {
                     // Spawn range: 40-80px ahead of player (close but reactable)
                     const minDistance = 40 * scaleRatio;
                     const maxDistance = 80 * scaleRatio;
                     const randomDistance = minDistance + Math.random() * (maxDistance - minDistance);
-                    const suddenHoleWidth = 50 * scaleRatio;
+                    const suddenJarWidth = 50 * scaleRatio;
                     const spawnX = player.x + player.width + randomDistance;
 
                     // Check if spawn location overlaps with any existing obstacle
                     const hasObstacleNearby = obstacles.some(obs => {
                         const obsLeft = obs.x - 30 * scaleRatio; // Add buffer
                         const obsRight = obs.x + obs.width + 30 * scaleRatio;
-                        const holeLeft = spawnX;
-                        const holeRight = spawnX + suddenHoleWidth;
+                        const jarLeft = spawnX;
+                        const jarRight = spawnX + suddenJarWidth;
                         // Check overlap
-                        return !(holeRight < obsLeft || holeLeft > obsRight);
+                        return !(jarRight < obsLeft || jarLeft > obsRight);
                     });
 
-                    // 0.3% chance per frame to spawn sudden hole, only on clear ground
+                    // 0.3% chance per frame to spawn sudden jam jar, only on clear ground
                     if (!hasObstacleNearby && Math.random() < 0.003) {
                         obstacles.push({
                             x: spawnX,
                             y: groundY,
-                            type: 'sudden-hole',
-                            width: suddenHoleWidth,
-                            height: 80 * scaleRatio,
-                            crackPhase: 1 // Immediately open
+                            type: 'sudden-jam',
+                            width: suddenJarWidth,
+                            height: 60 * scaleRatio
                         });
                     }
                 }
@@ -1320,109 +1312,61 @@
                         ctx.moveTo(obs.width * 0.3, -obs.height * 0.8); ctx.lineTo(obs.width * 0.7, -obs.height * 0.6);
                         ctx.moveTo(obs.width * 0.3, -obs.height * 0.5); ctx.lineTo(obs.width * 0.7, -obs.height * 0.3);
                         ctx.stroke();
-                    } else if (obs.type === 'jam') {
-                        // Jam Jar (Block)
-                        ctx.fillStyle = '#DC143C'; // Red Jam
-                        ctx.fillRect(0, -obs.height, obs.width, obs.height);
-                        ctx.fillStyle = '#fff'; // Label
-                        ctx.fillRect(2 * scaleRatio, -obs.height + (5 * scaleRatio), obs.width - (4 * scaleRatio), obs.height / 2);
-                        ctx.fillStyle = '#ccc'; // Lid
-                        ctx.fillRect(-2 * scaleRatio, -obs.height - (2 * scaleRatio), obs.width + (4 * scaleRatio), 5 * scaleRatio);
-                    } else if (obs.type === 'hole') {
-                        // Hole in the ground - player must jump over
-                        // Clear the ground line in this area (create a gap)
+                    } else if (obs.type === 'jam-trap' || obs.type === 'sudden-jam') {
+                        // Jam Jar Trap - embedded in ground, player falls into it
+                        // First, clear the ground line where the jar opening is
                         ctx.save();
                         ctx.globalCompositeOperation = 'destination-out';
-                        ctx.fillRect(-2 * scaleRatio, -5 * scaleRatio, obs.width + 4 * scaleRatio, 10 * scaleRatio);
+                        ctx.fillRect(0, -5 * scaleRatio, obs.width, 10 * scaleRatio);
                         ctx.restore();
 
-                        // Draw subtle shadow/depth gradient inside the hole
-                        const gradient = ctx.createLinearGradient(0, 0, 0, obs.height * 0.5);
-                        gradient.addColorStop(0, 'rgba(89, 53, 19, 0.3)');
-                        gradient.addColorStop(1, 'rgba(89, 53, 19, 0)');
-                        ctx.fillStyle = gradient;
-                        ctx.fillRect(0, 0, obs.width, obs.height * 0.5);
+                        // Draw jar body BELOW ground (positive Y = below ground line)
+                        ctx.fillStyle = 'rgba(200, 220, 255, 0.4)'; // Transparent glass
+                        ctx.fillRect(2 * scaleRatio, 0, obs.width - 4 * scaleRatio, obs.height);
 
-                        // Draw broken ground edges
-                        ctx.fillStyle = '#593513';
-                        // Left edge - jagged
-                        ctx.beginPath();
-                        ctx.moveTo(0, -8 * scaleRatio);
-                        ctx.lineTo(-4 * scaleRatio, 0);
-                        ctx.lineTo(0, 8 * scaleRatio);
-                        ctx.lineTo(4 * scaleRatio, 4 * scaleRatio);
-                        ctx.lineTo(2 * scaleRatio, -4 * scaleRatio);
-                        ctx.closePath();
-                        ctx.fill();
-                        // Right edge - jagged
-                        ctx.beginPath();
-                        ctx.moveTo(obs.width, -8 * scaleRatio);
-                        ctx.lineTo(obs.width + 4 * scaleRatio, 0);
-                        ctx.lineTo(obs.width, 8 * scaleRatio);
-                        ctx.lineTo(obs.width - 4 * scaleRatio, 4 * scaleRatio);
-                        ctx.lineTo(obs.width - 2 * scaleRatio, -4 * scaleRatio);
-                        ctx.closePath();
-                        ctx.fill();
-                    } else if (obs.type === 'sudden-hole') {
-                        // Sudden hole - just appears suddenly (same look as regular hole)
-                        // Mark as open immediately
-                        obs.crackPhase = 1;
+                        // Draw jam inside (red, fills bottom portion)
+                        ctx.fillStyle = '#DC143C';
+                        ctx.fillRect(4 * scaleRatio, obs.height * 0.4, obs.width - 8 * scaleRatio, obs.height * 0.6);
 
-                        // Clear the ground line in this area (create a gap)
-                        ctx.save();
-                        ctx.globalCompositeOperation = 'destination-out';
-                        ctx.fillRect(-2 * scaleRatio, -5 * scaleRatio, obs.width + 4 * scaleRatio, 10 * scaleRatio);
-                        ctx.restore();
+                        // Draw jar outline
+                        ctx.strokeStyle = '#666';
+                        ctx.lineWidth = 2 * scaleRatio;
+                        ctx.strokeRect(2 * scaleRatio, 0, obs.width - 4 * scaleRatio, obs.height);
 
-                        // Draw subtle shadow/depth gradient inside the hole
-                        const gradient = ctx.createLinearGradient(0, 0, 0, obs.height * 0.5);
-                        gradient.addColorStop(0, 'rgba(89, 53, 19, 0.3)');
-                        gradient.addColorStop(1, 'rgba(89, 53, 19, 0)');
-                        ctx.fillStyle = gradient;
-                        ctx.fillRect(0, 0, obs.width, obs.height * 0.5);
+                        // Draw jar rim at ground level (the opening)
+                        ctx.fillStyle = '#888';
+                        ctx.fillRect(-2 * scaleRatio, -3 * scaleRatio, obs.width + 4 * scaleRatio, 6 * scaleRatio);
 
-                        // Draw broken ground edges (same as regular hole)
-                        ctx.fillStyle = '#593513';
-                        // Left edge - jagged
-                        ctx.beginPath();
-                        ctx.moveTo(0, -8 * scaleRatio);
-                        ctx.lineTo(-4 * scaleRatio, 0);
-                        ctx.lineTo(0, 8 * scaleRatio);
-                        ctx.lineTo(4 * scaleRatio, 4 * scaleRatio);
-                        ctx.lineTo(2 * scaleRatio, -4 * scaleRatio);
-                        ctx.closePath();
-                        ctx.fill();
-                        // Right edge - jagged
-                        ctx.beginPath();
-                        ctx.moveTo(obs.width, -8 * scaleRatio);
-                        ctx.lineTo(obs.width + 4 * scaleRatio, 0);
-                        ctx.lineTo(obs.width, 8 * scaleRatio);
-                        ctx.lineTo(obs.width - 4 * scaleRatio, 4 * scaleRatio);
-                        ctx.lineTo(obs.width - 2 * scaleRatio, -4 * scaleRatio);
-                        ctx.closePath();
-                        ctx.fill();
+                        // Draw label on jar
+                        ctx.fillStyle = '#fff';
+                        ctx.fillRect(8 * scaleRatio, obs.height * 0.1, obs.width - 16 * scaleRatio, obs.height * 0.2);
+                        ctx.fillStyle = '#DC143C';
+                        ctx.font = `bold ${7 * scaleRatio}px Arial`;
+                        ctx.textAlign = 'center';
+                        ctx.fillText('JAM', obs.width / 2, obs.height * 0.25);
                     }
 
                     ctx.restore();
 
                     // Collision Detection
-                    if (obs.type === 'hole' || (obs.type === 'sudden-hole' && obs.crackPhase === 1)) {
-                        // Hole collision: player falls in if grounded and overlapping
-                        let holeLeft = obs.x + (10 * scaleRatio); // Slightly inset for fairness
-                        let holeRight = obs.x + obs.width - (10 * scaleRatio);
+                    if (obs.type === 'jam-trap' || obs.type === 'sudden-jam') {
+                        // Jam jar collision: player falls in if grounded and walks over it
+                        let jarLeft = obs.x + (10 * scaleRatio);
+                        let jarRight = obs.x + obs.width - (10 * scaleRatio);
                         let playerCenterX = player.x + player.width / 2;
 
-                        // If player is grounded and their center is over the hole, they start falling
-                        if (player.grounded && !player.fallingIntoHole && playerCenterX > holeLeft && playerCenterX < holeRight) {
-                            player.fallingIntoHole = true;
-                            player.holeX = obs.x + obs.width / 2; // Center of hole
-                            player.holeBottom = obs.y + obs.height - player.height; // Bottom of hole
+                        // If player is grounded and their center is over the jar opening, they fall in
+                        if (player.grounded && !player.fallingIntoJar && playerCenterX > jarLeft && playerCenterX < jarRight) {
+                            player.fallingIntoJar = true;
+                            player.jarX = obs.x;
+                            // Player stops in the jam (bottom 60% of jar)
+                            player.jarBottom = obs.y + obs.height * 0.5;
                             player.state = 'falling';
                             player.grounded = false;
-                            player.dy = 2; // Start falling
+                            player.dy = 2;
                             GameAudio.playGameOver();
                         }
-                    } else if (!player.fallingIntoHole) {
+                    } else if (!player.fallingIntoJar) {
                         // Regular obstacle collision (Simple AABB)
                         let hitX = obs.x;
                         let hitY = obs.y - obs.height;
@@ -1494,9 +1438,9 @@
                 particles = [];
                 clouds = [];
                 // Reset player state
-                player.fallingIntoHole = false;
-                player.fellToBottom = false;
-                player.holeBottom = 0;
+                player.fallingIntoJar = false;
+                player.stuckInJar = false;
+                player.jarBottom = 0;
                 player.state = 'run';
                 player.rotation = 0;
                 player.dy = 0;
