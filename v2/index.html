@@ -1192,8 +1192,9 @@
                 // Target Y: groundY - player.height - 2 (moved down)
                 const targetGroundY = groundY - player.height - (2 * scaleRatio);
 
-                if (player.fallingIntoJar) {
-                    // Player is falling into a jam jar - world stops, player falls straight down
+                if (player.fallingIntoJar && player.jarRef) {
+                    // Player is falling into a jam jar - keep centered on jar while it moves
+                    player.x = player.jarRef.x + player.jarRef.width / 2 - player.width / 2;
                     player.rotation += 0.2;
                     // Check if player has reached the bottom of the jar
                     if (player.y >= player.jarBottom) {
@@ -1219,13 +1220,6 @@
                     player.rotation += 0.1;
                 }
 
-                // Draw Player (Image)
-                ctx.save();
-                ctx.translate(player.x + player.width / 2, player.y + player.height / 2);
-                ctx.rotate(player.rotation);
-                ctx.drawImage(playerImg, -player.width / 2, -player.height / 2, player.width, player.height);
-                ctx.restore();
-
                 // --- Obstacles ---
                 // Spawn Logic
                 if (frame % Math.max(60, 120 - Math.floor(score / 5)) === 0) {
@@ -1238,7 +1232,7 @@
                     let w, h, yOff;
                     if (type === 'rolling-pin') { w = 40; h = 15; yOff = 0; }
                     else if (type === 'baguette') { w = 15; h = 60; yOff = 0; }
-                    else if (type === 'jam-trap') { w = 50; h = 60; yOff = 0; } // Jam jar: player falls into it
+                    else if (type === 'jam-trap') { w = 65; h = 60; yOff = 0; } // Jam jar: player falls into it
                     else { w = 25; h = 30; yOff = 0; }
 
                     obstacles.push({
@@ -1257,7 +1251,7 @@
                     const minDistance = 40 * scaleRatio;
                     const maxDistance = 80 * scaleRatio;
                     const randomDistance = minDistance + Math.random() * (maxDistance - minDistance);
-                    const suddenJarWidth = 50 * scaleRatio;
+                    const suddenJarWidth = 65 * scaleRatio;
                     const spawnX = player.x + player.width + randomDistance;
 
                     // Check if spawn location overlaps with any existing obstacle
@@ -1285,8 +1279,8 @@
                 // Update Obstacles
                 for (let i = 0; i < obstacles.length; i++) {
                     let obs = obstacles[i];
-                    // Stop moving if player is falling into jar
-                    if (!player.fallingIntoJar) {
+                    // Stop moving only when player is stuck in jar (not while falling)
+                    if (!player.stuckInJar) {
                         obs.x -= gameSpeed * scaleRatio;
                     }
 
@@ -1400,6 +1394,13 @@
                         }
                     }
                 }
+
+                // Draw Player (Image) - drawn AFTER obstacles so player appears on top
+                ctx.save();
+                ctx.translate(player.x + player.width / 2, player.y + player.height / 2);
+                ctx.rotate(player.rotation);
+                ctx.drawImage(playerImg, -player.width / 2, -player.height / 2, player.width, player.height);
+                ctx.restore();
 
                 // --- Particles ---
                 for (let i = 0; i < particles.length; i++) {
