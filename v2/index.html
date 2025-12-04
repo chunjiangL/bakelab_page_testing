@@ -1355,11 +1355,28 @@
                         ctx.fillStyle = '#DC143C';
                         ctx.fillRect(4 * scaleRatio, obs.height * 0.4, obs.width - 8 * scaleRatio, obs.height * 0.6);
 
-                        // Draw "JAM" label on the jam
+                        // Draw "JAM" sticker label
+                        ctx.save();
+                        // Sticker background (white rounded rectangle)
+                        const stickerW = 36 * scaleRatio;
+                        const stickerH = 14 * scaleRatio;
+                        const stickerX = (obs.width - stickerW) / 2;
+                        const stickerY = obs.height * 0.65;
                         ctx.fillStyle = '#fff';
+                        ctx.beginPath();
+                        ctx.roundRect(stickerX, stickerY, stickerW, stickerH, 3 * scaleRatio);
+                        ctx.fill();
+                        // Sticker border
+                        ctx.strokeStyle = '#8B0000';
+                        ctx.lineWidth = 1 * scaleRatio;
+                        ctx.stroke();
+                        // JAM text
+                        ctx.fillStyle = '#8B0000';
                         ctx.font = `bold ${10 * scaleRatio}px Arial`;
                         ctx.textAlign = 'center';
-                        ctx.fillText('JAM', obs.width / 2, obs.height * 0.75);
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText('JAM', obs.width / 2, stickerY + stickerH / 2);
+                        ctx.restore();
 
                         // Draw jar outline
                         ctx.strokeStyle = '#666';
