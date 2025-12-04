@@ -171,6 +171,45 @@
             width: 100%;
             min-height: 100vh;
             padding: 120px 20px;
+            overflow: hidden;
+        }
+
+        /* Watermark factory machine */
+        .watermark-factory {
+            position: absolute;
+            top: 50%;
+            right: -5%;
+            transform: translateY(-50%);
+            width: 700px;
+            height: 560px;
+            opacity: 0.08;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .watermark-factory .wm-stroke {
+            fill: none;
+            stroke: #593513;
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .watermark-factory .wm-stroke-thin {
+            fill: none;
+            stroke: #593513;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        @media (max-width: 768px) {
+            .watermark-factory {
+                width: 400px;
+                height: 320px;
+                right: -20%;
+                opacity: 0.05;
+            }
         }
 
         .container {
@@ -302,6 +341,53 @@
 
     <!-- Main Content -->
     <div class="content-section" id="content-section">
+        <!-- Watermark: Outline-only factory machine -->
+        <svg class="watermark-factory" viewBox="0 0 150 120" xmlns="http://www.w3.org/2000/svg">
+            <!-- Chute -->
+            <path class="wm-stroke" d="M20 10 L20 30" />
+            <path class="wm-stroke" d="M30 10 L30 30" />
+            <rect x="15" y="5" width="20" height="5" rx="1" class="wm-stroke" />
+
+            <!-- Conveyor Belt -->
+            <line x1="10" y1="50" x2="140" y2="50" class="wm-stroke" />
+
+            <!-- Conveyor Wheels -->
+            <circle cx="20" cy="56" r="5" class="wm-stroke" />
+            <circle cx="130" cy="56" r="5" class="wm-stroke" />
+
+            <!-- Oven Body -->
+            <rect x="50" y="20" width="50" height="35" rx="3" class="wm-stroke" />
+            <!-- Oven Window -->
+            <rect x="58" y="28" width="24" height="16" rx="2" class="wm-stroke-thin" />
+            <!-- Chimney -->
+            <path class="wm-stroke" d="M75 20 L75 12" />
+            <!-- Smoke Puffs -->
+            <circle cx="75" cy="8" r="3" class="wm-stroke-thin" />
+            <circle cx="70" cy="4" r="2" class="wm-stroke-thin" />
+            <circle cx="80" cy="5" r="2.5" class="wm-stroke-thin" />
+
+            <!-- Oven Buttons -->
+            <circle cx="90" cy="28" r="3" class="wm-stroke-thin" />
+            <circle cx="90" cy="38" r="3" class="wm-stroke-thin" />
+
+            <!-- Oven Base -->
+            <rect x="50" y="52" width="50" height="4" rx="1" class="wm-stroke" />
+
+            <!-- Dough Ball (on belt) -->
+            <circle cx="35" cy="45" r="5" class="wm-stroke" />
+
+            <!-- Bread Character (exiting oven) -->
+            <g transform="translate(115, 42)">
+                <!-- Bread Body -->
+                <path class="wm-stroke" d="M-8 -6 Q0 -12 8 -6 L8 6 Q0 8 -8 6 Z" />
+                <!-- Eyes -->
+                <circle cx="-3" cy="0" r="1.5" class="wm-stroke-thin" />
+                <circle cx="3" cy="0" r="1.5" class="wm-stroke-thin" />
+                <!-- Smile -->
+                <path class="wm-stroke-thin" d="M-3 3 Q0 6 3 3" />
+            </g>
+        </svg>
+
         <div class="container">
 
             <!-- Intro / Mission -->
