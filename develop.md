@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Marketing landing page for BakeLab, an industry research lab specializing in high-quality datasets for AI/ML training. The site introduces the company's mission, services (off-the-shelf and customized datasets), and provides contact information for sales and careers.
+Static landing page for BakeLab, a data lab company specializing in high-quality datasets for AI/ML training. The site features a hidden interactive endless runner game triggered by user interaction with an animated bake factory.
 
 ## Project Type
 
@@ -38,12 +38,12 @@ bakelab_page/
 │
 ├── v2/                       # Version 2 - Interactive design
 │   ├── index.html           # Animated landing with easter egg game
-│   ├── BakeLab-01.png       # Primary logo (155KB)
-│   ├── BakeLab-02.png       # Variant logo 2 (165KB)
-│   ├── BakeLab-03.png       # Variant logo 3 (166KB)
-│   ├── BakeLab-04.png       # Variant logo 4 (175KB)
-│   ├── BakeLab-05.png       # Rare variant logo 5 (173KB)
-│   ├── bake192.png          # Game character sprite (20KB)
+│   ├── BakeLab-01.png       # Primary logo - 90% probability (152KB)
+│   ├── BakeLab-02.png       # Uncommon logo - 3% probability (161KB)
+│   ├── BakeLab-03.png       # Uncommon logo - 5% probability (162KB)
+│   ├── BakeLab-04.png       # Rare logo - 1.9% probability (171KB)
+│   ├── BakeLab-05.png       # Very rare logo - 0.1% probability (169KB)
+│   ├── bake192.png          # Game player sprite - bread character (20KB)
 │   ├── favicon.ico          # Site favicon
 │   └── robots.txt           # Disallow all crawling
 │
@@ -92,11 +92,14 @@ bakelab_page/
 
 - **Easter Egg Game:** "BakeLab Runner" triggered by factory acceleration
   - Canvas-based infinite runner
-  - Four obstacle types: rolling pin, baguette, jam jar, hole trap
+  - Three obstacle types: rolling pin, baguette, jam trap (plus sudden jam trap)
+  - Player character: Bread sprite (bake192.png)
+  - Jam trap mechanic: Player falls into jar and gets stuck
   - Particle effects and parallax clouds
   - Responsive scaling for mobile
   - Web Audio API sound effects
   - Score tracking with progressive difficulty
+  - Score-based bonus logos on game over (thresholds: 5, 10, 20, 50)
 
 - **Auto-Scroll Behavior:** Automatically scrolls to content after 3 seconds
 
@@ -113,33 +116,41 @@ bakelab_page/
 
 **Game Mechanics:**
 
-The BakeLab Runner game features progressive difficulty with four obstacle types that unlock based on score:
+The BakeLab Runner game features progressive difficulty with three regular obstacle types that unlock based on score, plus a special sudden jam trap mechanic:
 
 1. **Rolling Pin** (Available from start)
-   - Low horizontal obstacle
+   - Low horizontal obstacle (40x15px)
    - Player must jump over it
    - Always present at all score levels
+   - Basic jump mechanic
 
-2. **Hole Trap** (Unlocks at score > 5, 30% spawn chance)
-   - Dark pit (#1a1a1a) below ground line
-   - Size: 60px wide × 80px deep (scaled for mobile)
-   - Visual: Brown edge markers and depth lines
-   - Gameplay: Player must be AIRBORNE when crossing - if grounded over hole center, player falls and dies
-   - Inverse mechanic to barriers: barriers require jumping, holes punish being grounded
-
-3. **Baguette** (Unlocks at score > 10, 20% spawn chance)
-   - Tall vertical obstacle
+2. **Baguette** (Unlocks at score > 10, spawns when 0.5 < random <= 0.7)
+   - Tall vertical obstacle (20x70px)
    - Requires high or early jump
+   - 20% spawn probability when unlocked
 
-4. **Jam Jar** (Unlocks at score > 20, rare spawn when random > 0.85)
-   - Block-style obstacle
-   - Overrides hole spawn when conditions met
+3. **Jam Trap** (Unlocks at score > 5, spawns when random > 0.7)
+   - Large jar obstacle (60x60px) embedded in ground
+   - Player falls into jar and gets stuck in jam
+   - ~30% spawn probability when unlocked
+   - Special physics: Player falls into jar center and becomes stuck
+
+4. **Sudden Jam Trap** (Special mechanic after score > 10)
+   - Not part of regular spawn cycle
+   - Appears close to player position
+   - Adds surprise difficulty element
+   - Same jam trap physics as regular jam trap
+
+**Player Jar Physics Properties:**
+- `fallingIntoJar`: Boolean tracking if player is falling into a jar
+- `jarRef`: Reference to the jar obstacle player is interacting with
+- `jarBottom`: Y position of bottom inside the jar (jar.y + 20px)
+- `stuckInJar`: Boolean indicating player is stuck in jam (triggers game over)
 
 **Obstacle Spawn Rate Progression:**
 - Score 0-5: Rolling pin only
-- Score 6-10: Rolling pin + Hole (30%)
-- Score 11-20: Rolling pin + Hole (30%) + Baguette (20%)
-- Score 21+: All obstacles + Jam jar (rare, >0.85)
+- Score 6-10: Rolling pin + Jam trap (30%)
+- Score 11+: Rolling pin + Jam trap (30%) + Baguette (20%) + Sudden jam trap (special)
 
 ## Key Files and Their Purposes
 
@@ -148,12 +159,15 @@ Simple, professional landing page implementation. Self-contained with embedded C
 
 ### /v2/index.html
 Advanced interactive experience with multiple JavaScript subsystems:
-1. **Logo randomizer** (lines 358-385)
-2. **Auto-scroll** (lines 387-393)
-3. **Factory animation controller** (lines 395-545)
-4. **Game engine** (lines 960-1427)
-   - Obstacle spawn logic with hole trap (lines 1210-1232)
-   - Hole collision detection (lines 1295-1305)
+1. **Logo randomizer** - Probabilistic logo selection on page load
+2. **Auto-scroll** - Automatically scrolls to content after 3 seconds
+3. **Factory animation controller** - Interactive bake factory with speed mechanics
+4. **Game engine** - BakeLab Runner endless runner game
+   - Player physics with jam trap properties (fallingIntoJar, jarRef, jarBottom, stuckInJar)
+   - Obstacle spawn logic with three types (rolling pin, baguette, jam trap)
+   - Sudden jam trap mechanic (triggers after score > 10)
+   - Jam trap collision detection and falling physics
+   - Score-based bonus logo rewards
 
 **Code Organization:**
 - Hero section with dynamic logo
@@ -183,12 +197,14 @@ open v2/index.html
 ```
 
 ### Production Deployment
+Designed to work as GitHub Pages static site:
 1. Choose version (v1 or v2)
-2. Deploy entire folder to web server
+2. Deploy entire folder to GitHub Pages or any static web server
 3. Ensure MIME types are correctly configured:
    - `.png` → `image/png`
    - `.ico` → `image/x-icon`
    - `.html` → `text/html`
+4. For GitHub Pages: Push to repository and enable Pages in settings
 
 ### Performance Considerations
 - All CSS/JS is inlined (no external requests except fonts/analytics)
@@ -282,10 +298,14 @@ open v2/index.html
 
 ### Modifying Game Obstacles
 To adjust obstacle behavior:
-- **Hole trap dimensions:** Change `w` and `h` values for `type === 'hole'` (line 1222)
-- **Hole spawn probability:** Modify `typeRand > 0.7` condition (line 1214)
-- **Hole collision detection:** Adjust hitbox inset at `10 * scaleRatio` (lines 1297-1298)
-- **Obstacle unlock thresholds:** Change score comparisons (lines 1214-1216)
+- **Rolling pin dimensions:** 40x15px (basic obstacle)
+- **Baguette dimensions:** 20x70px (tall obstacle)
+- **Jam trap dimensions:** 60x60px (jar obstacle)
+- **Jam trap spawn probability:** Modify `typeRand > 0.7` condition (spawns at score > 5)
+- **Baguette spawn probability:** Modify `0.5 < typeRand <= 0.7` condition (spawns at score > 10)
+- **Sudden jam trap:** Triggers after score > 10, appears close to player
+- **Jam trap physics:** Player falls to `jar.y + 20px` and becomes stuck
+- **Obstacle unlock thresholds:** Change score comparisons (score > 5 for jam trap, score > 10 for baguette)
 
 ### Analytics
 Current Umami instance ID: `82364d02-ef99-45f6-b1f2-37c338543b86`

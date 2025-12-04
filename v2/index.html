@@ -873,11 +873,6 @@
             .game-message p {
                 font-size: 0.9rem !important;
             }
-
-            #bonus-logo {
-                width: 45px !important;
-                height: 45px !important;
-            }
         }
 
         .game-btn {
@@ -1231,8 +1226,11 @@
                 if (frame % Math.max(60, 120 - Math.floor(score / 5)) === 0) {
                     const typeRand = Math.random();
                     let type = 'rolling-pin';
-                    if (score > 5 && typeRand > 0.7) type = 'jam-trap'; // Jam jar trap appears after score 5
-                    if (score > 10 && typeRand > 0.5 && typeRand <= 0.7) type = 'baguette';
+                    // Stage 1 (0-5): Rolling pin only
+                    // Stage 2 (5-20): Rolling pin + Jam trap
+                    // Stage 3 (20+): All obstacles
+                    if (score >= 5 && typeRand > 0.7) type = 'jam-trap'; // Jam jar trap appears at score 5+
+                    if (score >= 20 && typeRand > 0.5 && typeRand <= 0.7) type = 'baguette'; // Baguette at score 20+
 
                     // Scale dimensions
                     let w, h, yOff;
@@ -1251,8 +1249,8 @@
                 }
 
                 // Sudden Jam Jar Trap - appears close in front of player!
-                // Only after score > 10, small chance each frame, and not too often
-                if (score > 10 && !player.fallingIntoJar && player.grounded) {
+                // Only after score >= 20, small chance each frame, and not too often
+                if (score >= 20 && !player.fallingIntoJar && player.grounded) {
                     // Spawn range: 40-80px ahead of player (close but reactable)
                     const minDistance = 40 * scaleRatio;
                     const maxDistance = 80 * scaleRatio;
@@ -1350,17 +1348,41 @@
                         ctx.restore();
 
                         // Draw jar body BELOW ground (positive Y = below ground line)
-                        ctx.fillStyle = 'rgba(200, 220, 255, 0.4)'; // Transparent glass
+                        ctx.fillStyle = 'rgba(200, 220, 255, 0.3)'; // Transparent glass
                         ctx.fillRect(2 * scaleRatio, 0, obs.width - 4 * scaleRatio, obs.height);
 
                         // Draw jam inside (red, fills bottom portion)
                         ctx.fillStyle = '#DC143C';
                         ctx.fillRect(4 * scaleRatio, obs.height * 0.4, obs.width - 8 * scaleRatio, obs.height * 0.6);
 
+                        // Draw "JAM" label on the jam
+                        ctx.fillStyle = '#fff';
+                        ctx.font = `bold ${10 * scaleRatio}px Arial`;
+                        ctx.textAlign = 'center';
+                        ctx.fillText('JAM', obs.width / 2, obs.height * 0.75);
+
                         // Draw jar outline
                         ctx.strokeStyle = '#666';
                         ctx.lineWidth = 2 * scaleRatio;
                         ctx.strokeRect(2 * scaleRatio, 0, obs.width - 4 * scaleRatio, obs.height);
+
+                        // Glass reflection effect - diagonal shine
+                        ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+                        ctx.beginPath();
+                        ctx.moveTo(6 * scaleRatio, 2 * scaleRatio);
+                        ctx.lineTo(12 * scaleRatio, 2 * scaleRatio);
+                        ctx.lineTo(6 * scaleRatio, obs.height * 0.5);
+                        ctx.closePath();
+                        ctx.fill();
+
+                        // Second smaller reflection
+                        ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
+                        ctx.beginPath();
+                        ctx.moveTo(14 * scaleRatio, 2 * scaleRatio);
+                        ctx.lineTo(18 * scaleRatio, 2 * scaleRatio);
+                        ctx.lineTo(14 * scaleRatio, obs.height * 0.3);
+                        ctx.closePath();
+                        ctx.fill();
 
                         // Draw jar rim at ground level (the opening)
                         ctx.fillStyle = '#888';
